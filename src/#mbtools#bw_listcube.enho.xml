@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>HOOK_IMPL</TOOL>
+   <SHORTTEXT>MBT Listcube</SHORTTEXT>
+   <ORIGINAL_OBJECT>
+    <PGMID>R3TR</PGMID>
+    <ORG_OBJ_TYPE>FUGR</ORG_OBJ_TYPE>
+    <ORG_OBJ_NAME>RSDQ</ORG_OBJ_NAME>
+    <ORG_MAIN_TYPE>FUGR</ORG_MAIN_TYPE>
+    <ORG_MAIN_NAME>RSDQ</ORG_MAIN_NAME>
+    <PROGRAMNAME>SAPLRSDQ</PROGRAMNAME>
+   </ORIGINAL_OBJECT>
+   <ENHANCEMENTS>
+    <ENH_HOOK_IMPL>
+     <PROGRAMNAME>SAPLRSDQ</PROGRAMNAME>
+     <ENHMODE>D</ENHMODE>
+     <FULL_NAME>\FU:RSDQ_VIEW_INFOPROV\SE:BEGIN\EI</FULL_NAME>
+     <SOURCE>
+      <item>************************************************************************</item>
+      <item>* MBT Listcube</item>
+      <item>*</item>
+      <item>* (c) MBT 2021 https://marcbernardtools.com/</item>
+      <item>************************************************************************</item>
+      <item/>
+      <item>  IF /mbtools/cl_switches=&gt;is_active( /mbtools/cl_switches=&gt;c_tool-mbt_listcube ) = abap_true.</item>
+      <item/>
+      <item>    CALL FUNCTION &apos;/MBTOOLS/BW_VIEW_INFOPROV&apos;</item>
+      <item>      EXPORTING</item>
+      <item>        i_infoprov           = i_infoprov</item>
+      <item>        i_s_dta              = i_s_dta</item>
+      <item>        i_t_dta_dime         = i_t_dta_dime</item>
+      <item>        i_show_sids          = i_show_sids</item>
+      <item>        i_show_dimids        = i_show_dimids</item>
+      <item>        i_tech_nms           = i_tech_nms</item>
+      <item>        i_use_db_aggregation = i_use_db_aggregation</item>
+      <item>        i_repnm              = i_repnm</item>
+      <item>      CHANGING</item>
+      <item>        c_t_ioinf            = c_t_ioinf</item>
+      <item>      EXCEPTIONS</item>
+      <item>        dta_not_found        = 1</item>
+      <item>        illegal_input        = 2</item>
+      <item>        x_message            = 3</item>
+      <item>        OTHERS               = 4.</item>
+      <item>    CASE sy-subrc.</item>
+      <item>      WHEN 0.</item>
+      <item>        RETURN.</item>
+      <item>      WHEN 1.</item>
+      <item>        RAISE dta_not_found.</item>
+      <item>      WHEN 2.</item>
+      <item>        RAISE illegal_input.</item>
+      <item>      WHEN OTHERS.</item>
+      <item>        RAISE x_message.</item>
+      <item>    ENDCASE.</item>
+      <item/>
+      <item>  ENDIF.</item>
+      <item/>
+     </SOURCE>
+    </ENH_HOOK_IMPL>
+   </ENHANCEMENTS>
+   <SOTR>
+    <item>
+     <HEADER>
+      <CONCEPT>000D3A8FA0651EEB98CF176D49AF08C4</CONCEPT>
+      <CREA_LAN>E</CREA_LAN>
+      <TRALA_TYPE>1</TRALA_TYPE>
+      <OBJID_VEC>AAI=</OBJID_VEC>
+     </HEADER>
+     <ENTRIES>
+      <SOTR_TEXT>
+       <CONCEPT>000D3A8FA0651EEB98CF176D49AF08C4</CONCEPT>
+       <LANGU>E</LANGU>
+       <LFD_NUM>0001</LFD_NUM>
+       <FLAG_CNTXT>X</FLAG_CNTXT>
+       <STATUS>R</STATUS>
+       <LENGTH>022</LENGTH>
+       <TEXT>MBT Listcube</TEXT>
+      </SOTR_TEXT>
+     </ENTRIES>
+    </item>
+   </SOTR>
+   <SOTR_USE>
+    <SOTR_USE>
+     <PGMID>R3TR</PGMID>
+     <OBJECT>ENHO</OBJECT>
+     <OBJ_NAME>/MBTOOLS/BW_LISTCUBE</OBJ_NAME>
+     <CONCEPT>000D3A8FA0651EEB98CF176D49AF08C4</CONCEPT>
+     <LFD_NUM>0001</LFD_NUM>
+    </SOTR_USE>
+   </SOTR_USE>
+  </asx:values>
+ </asx:abap>
+</abapGit>

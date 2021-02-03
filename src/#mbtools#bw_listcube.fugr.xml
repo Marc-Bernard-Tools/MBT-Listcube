@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_FUGR" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <AREAT>MBT Listcube</AREAT>
+   <INCLUDES>
+    <SOBJ_NAME>/MBTOOLS/LBW_LISTCUBETOP</SOBJ_NAME>
+    <SOBJ_NAME>/MBTOOLS/SAPLBW_LISTCUBE</SOBJ_NAME>
+   </INCLUDES>
+   <FUNCTIONS>
+    <item>
+     <FUNCNAME>/MBTOOLS/BW_VIEW_INFOPROV</FUNCNAME>
+     <SHORT_TEXT>MBT Listcube</SHORT_TEXT>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>I_INFOPROV</PARAMETER>
+       <TYP>RSINFOPROV</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_S_DTA</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>RSD_S_DTA</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_T_DTA_DIME</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>RSD_T_DTA_DIME</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_SHOW_SIDS</PARAMETER>
+       <DEFAULT>RS_C_FALSE</DEFAULT>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>RS_BOOL</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_SHOW_DIMIDS</PARAMETER>
+       <DEFAULT>RS_C_FALSE</DEFAULT>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>RS_BOOL</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_USE_DB_AGGREGATION</PARAMETER>
+       <DEFAULT>RS_C_FALSE</DEFAULT>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>RS_BOOL</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_TECH_NMS</PARAMETER>
+       <DEFAULT>RS_C_FALSE</DEFAULT>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>RS_BOOL</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_SHOW_REPORT</PARAMETER>
+       <DEFAULT>RS_C_FALSE</DEFAULT>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>RS_BOOL</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_REPNM</PARAMETER>
+       <DBFIELD>SY-REPID</DBFIELD>
+       <OPTIONAL>X</OPTIONAL>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_TC_NO</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>I</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>I_TC_ID</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>RSDRSYSID</TYP>
+      </RSIMP>
+     </IMPORT>
+     <CHANGING>
+      <RSCHA>
+       <PARAMETER>C_T_IOINF</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>RSDQ_T_IOBJ_INFO</TYP>
+      </RSCHA>
+     </CHANGING>
+     <EXCEPTION>
+      <RSEXC>
+       <EXCEPTION>DTA_NOT_FOUND</EXCEPTION>
+      </RSEXC>
+      <RSEXC>
+       <EXCEPTION>ILLEGAL_INPUT</EXCEPTION>
+      </RSEXC>
+      <RSEXC>
+       <EXCEPTION>X_MESSAGE</EXCEPTION>
+      </RSEXC>
+     </EXCEPTION>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>I_INFOPROV</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>InfoProvider</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_S_DTA</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Metadata of the data target</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_T_DTA_DIME</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Dimensions</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_SHOW_SIDS</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>generate SELECT-OPTIONS for SIDs</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_SHOW_DIMIDS</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>generate SELECT-OPTIONS for DIMIDs</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_USE_DB_AGGREGATION</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Boolean</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_TECH_NMS</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Use technical names?</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_SHOW_REPORT</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Display generated report</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_REPNM</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Name of the required reports</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_TC_NO</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>RSDRC Testcase number</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>I_TC_ID</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>RSDRC Test Case ID</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>C_T_IOINF</PARAMETER>
+       <KIND>P</KIND>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>DTA_NOT_FOUND</PARAMETER>
+       <KIND>X</KIND>
+       <STEXT>unknown InfoCube</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>ILLEGAL_INPUT</PARAMETER>
+       <KIND>X</KIND>
+       <STEXT>illegal input</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>X_MESSAGE</PARAMETER>
+       <KIND>X</KIND>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+   </FUNCTIONS>
+  </asx:values>
+ </asx:abap>
+</abapGit>
