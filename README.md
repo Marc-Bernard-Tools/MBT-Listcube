@@ -1,6 +1,6 @@
 ![abap package version](https://img.shields.io/endpoint?url=https://shield.abap.space/version-shield-json/github/Marc-Bernard-Tools/Marc-Bernard-Tools-Versions/.apack-manifest.xml/dependencies/github.com/Marc-Bernard-Tools/MBT-Listcube&label=version&color=darkgray)
 
-# MBT_Listcube
+# MBT Listcube
 
 Variants for Transaction LISTCUBE. Simple, Powerful, Free!
 
