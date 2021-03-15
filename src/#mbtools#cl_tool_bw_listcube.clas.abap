@@ -19,7 +19,7 @@ CLASS /mbtools/cl_tool_bw_listcube DEFINITION
         bundle_id    TYPE i VALUE 0,
         download_id  TYPE i VALUE 5227,
         description  TYPE string
-        VALUE 'Variants for transaction LISTCUBE: Simple, powerful, free!' ##NO_TEXT,
+        VALUE 'Variants for Transaction LISTCUBE: Simple, Powerful, Free!' ##NO_TEXT,
         has_launch   TYPE abap_bool VALUE abap_true,
         mbt_command  TYPE string VALUE 'LISTCUBE',
         mbt_shortcut TYPE string VALUE 'LC',
