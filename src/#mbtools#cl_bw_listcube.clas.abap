@@ -80,6 +80,24 @@ CLASS /mbtools/cl_bw_listcube DEFINITION
     TYPES:
       ty_texts  TYPE STANDARD TABLE OF ty_text WITH DEFAULT KEY.
 
+
+    CLASS-METHODS _set_optimistic_lock
+      IMPORTING
+        !iv_infoprov TYPE rsddatatarget
+      RAISING
+        /mbtools/cx_exception.
+
+    CLASS-METHODS _promote_lock
+      IMPORTING
+        !iv_infoprov TYPE rsddatatarget
+      RAISING
+        /mbtools/cx_exception.
+
+    CLASS-METHODS _release_lock
+      IMPORTING
+        !iv_infoprov TYPE rsddatatarget
+      RAISING
+        /mbtools/cx_exception.
 ENDCLASS.
 
 
@@ -105,6 +123,8 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
       ls_vari_desc  TYPE varid,
       lt_params     TYPE ty_params,
       lt_texts      TYPE ty_texts.
+
+    _set_optimistic_lock( iv_infoprov ).
 
     " Get all variants
     ls_prog_range-sign   = 'I'.
@@ -193,12 +213,15 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
     ENDLOOP.
 
     " Save changes
-    " TODO enqueue
-    DELETE FROM /mbtools/bwvars WHERE infoprov = iv_infoprov ##TODO. "#EC CI_SUBRC
+    _promote_lock( iv_infoprov ).
+
+    DELETE FROM /mbtools/bwvars WHERE infoprov = iv_infoprov. "#EC CI_SUBRC
 
     INSERT /mbtools/bwvars FROM TABLE lt_vars.            "#EC CI_SUBRC
 
     CALL FUNCTION 'RSDU_DB_COMMIT'.
+
+    _release_lock( iv_infoprov ).
 
   ENDMETHOD.
 
@@ -410,30 +433,6 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
         CONTINUE.
       ENDIF.
 
-      " InfoObjects
-      CALL TRANSFORMATION id
-        SOURCE XML ls_var-ioinf
-        RESULT data = lt_ioinfs.
-      IF sy-subrc <> 0.
-        BREAK-POINT ID /mbtools/bc.
-        CONTINUE.
-      ENDIF.
-
-      " Map previous variant definition (param/ioinf) to current InfoObjects
-      " since InfoProvider definition or InfoObject selection
-      " could have changed
-      LOOP AT lt_params INTO ls_param ##TODO.
-        " fieldname > iobjnm
-        READ TABLE lt_ioinfs INTO ls_ioinf
-          WITH KEY infoprov = iv_infoprov iobjnm = ls_param-selname.
-        IF sy-subrc = 0.
-          " InfoObject still exists
-        ELSE.
-          " InfoObject does not exist anymore
-          DELETE lt_params WHERE selname = ls_param-selname.
-        ENDIF.
-      ENDLOOP.
-
       " Texts
       CALL TRANSFORMATION id
         SOURCE XML ls_var-texts
@@ -453,11 +452,41 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
         APPEND ls_vari_text TO lt_vari_text.
       ENDLOOP.
 
+      " InfoObjects
+      CALL TRANSFORMATION id
+        SOURCE XML ls_var-ioinf
+        RESULT data = lt_ioinfs.
+      IF sy-subrc <> 0.
+        BREAK-POINT ID /mbtools/bc.
+        CONTINUE.
+      ENDIF.
+
+      " Map previous variant definition (param/ioinf) to current InfoObjects
+      " since InfoProvider definition or InfoObject selection could have changed
+      IF lt_ioinfs <> it_ioinf.
+
+        LOOP AT lt_params INTO ls_param ##TODO.
+          " fieldname > iobjnm
+          READ TABLE lt_ioinfs INTO ls_ioinf
+            WITH KEY infoprov = iv_infoprov iobjnm = ls_param-selname.
+          IF sy-subrc = 0.
+            " InfoObject still exists
+          ELSE.
+            " InfoObject does not exist anymore
+            DELETE lt_params WHERE selname = ls_param-selname.
+          ENDIF.
+        ENDLOOP.
+
+      ENDIF.
+
       " Screens
       ls_vari_scr-dynnr = '0001'.
       APPEND ls_vari_scr TO lt_vari_scr.
       ls_vari_scr-dynnr = '1000'.
       APPEND ls_vari_scr TO lt_vari_scr.
+
+      " Variants might already exist for report (if it's not generated)
+      ASSERT 0 = 0 ##TODO.
 
       " Create new variant
       CALL FUNCTION 'RS_CREATE_VARIANT_255'
@@ -501,6 +530,72 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
       ENDIF.
       MODIFY SCREEN.
     ENDLOOP.
+
+  ENDMETHOD.
+
+
+  METHOD _promote_lock.
+    " Get exclusive lock just before saving
+
+    DATA lv_msg TYPE string.
+
+    CALL FUNCTION 'ENQUEUE_/MBTOOLS/E_VARNT'
+      EXPORTING
+        mode_/mbtools/bwvars = 'R'
+        infoprov             = iv_infoprov
+      EXCEPTIONS
+        foreign_lock         = 1
+        system_failure       = 2
+        OTHERS               = 3.
+    IF sy-subrc <> 0.
+      " If not optimistic lock exist, lock exclusively
+      CALL FUNCTION 'ENQUEUE_/MBTOOLS/E_VARNT'
+        EXPORTING
+          mode_/mbtools/bwvars = 'E'
+          infoprov             = iv_infoprov
+        EXCEPTIONS
+          foreign_lock         = 1
+          system_failure       = 2
+          OTHERS               = 3.
+      IF sy-subrc <> 0.
+        lv_msg = |InfoProvider { iv_infoprov } variants are locked|.
+        /mbtools/cx_exception=>raise( lv_msg ).
+      ENDIF.
+    ENDIF.
+
+  ENDMETHOD.
+
+
+  METHOD _release_lock.
+    " called after deleting or before re-acquiring
+
+    CALL FUNCTION 'DEQUEUE_/MBTOOLS/E_VARNT'
+      EXPORTING
+        infoprov = iv_infoprov.
+
+  ENDMETHOD.
+
+
+  METHOD _set_optimistic_lock.
+    " Always set when (re-)reading an entry
+
+    DATA lv_msg TYPE string.
+
+    " Existing lock must be released before acquiring a new one
+    _release_lock( iv_infoprov ).
+
+    CALL FUNCTION 'ENQUEUE_/MBTOOLS/E_VARNT'
+      EXPORTING
+        mode_/mbtools/bwvars = 'O'
+        infoprov             = iv_infoprov
+      EXCEPTIONS
+        foreign_lock         = 1
+        system_failure       = 2
+        OTHERS               = 3.
+    IF sy-subrc <> 0.
+      lv_msg = |InfoProvider { iv_infoprov } variants are locked|.
+      /mbtools/cx_exception=>raise( lv_msg ).
+    ENDIF.
 
   ENDMETHOD.
 ENDCLASS.
