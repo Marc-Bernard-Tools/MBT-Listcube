@@ -73,7 +73,15 @@ CLASS /mbtools/cl_bw_listcube DEFINITION
       END OF ty_value.
     TYPES:
       ty_values TYPE STANDARD TABLE OF ty_value WITH DEFAULT KEY.
+    TYPES:
+      ty_iobjs TYPE STANDARD TABLE OF /mbtools/bwvarsi WITH DEFAULT KEY.
 
+    CLASS-METHODS _map_infoobject_selection
+      IMPORTING
+        !it_ioinf  TYPE rsdq_t_iobj_info
+        !it_iobjs  TYPE ty_iobjs
+      CHANGING
+        !ct_params TYPE ty_params.
     CLASS-METHODS _set_optimistic_lock
       IMPORTING
         !iv_infoprov TYPE rsddatatarget
@@ -108,7 +116,7 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
       lt_creadate   TYPE TABLE OF rsdatrange,
       lt_changedate TYPE TABLE OF rsdatrange,
       lt_variants   TYPE TABLE OF rsvariinfo,
-      lt_valutab    TYPE TABLE OF rsparamsl_255,
+      lt_valutab    TYPE TABLE OF ty_param,
       lt_var        TYPE TABLE OF /mbtools/bwvars,
       lt_iobjs      TYPE TABLE OF /mbtools/bwvarsi,
       lt_params     TYPE TABLE OF /mbtools/bwvarsp,
@@ -390,8 +398,6 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
     FIELD-SYMBOLS:
       <ls_var>        LIKE LINE OF lt_var,
       <ls_params>     LIKE LINE OF lt_params,
-      <ls_ioinf>      LIKE LINE OF it_ioinf,
-      <ls_iobjs>      LIKE LINE OF lt_iobjs,
       <ls_texts>      LIKE LINE OF lt_texts,
       <ls_vari_text>  LIKE LINE OF lt_vari_text,
       <ls_vari_scr>   LIKE LINE OF lt_vari_scr,
@@ -403,7 +409,7 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
     LOOP AT lt_var ASSIGNING <ls_var>.
       CLEAR: ls_vari_desc, lt_vari_text, lt_vari_scr, lt_vari_param.
 
-      " Definitions
+      " Definition
       MOVE-CORRESPONDING <ls_var> TO ls_vari_desc.
       ls_vari_desc-report = iv_repnm.
 
@@ -417,7 +423,6 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
           <ls_vari_param>-option = <ls_params>-opt.
         ENDLOOP.
       ENDIF.
-
 
       " Texts
       SELECT * FROM /mbtools/bwvarst INTO TABLE lt_texts
@@ -435,27 +440,15 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
       SELECT * FROM /mbtools/bwvarsi INTO TABLE lt_iobjs
         WHERE infoprov = <ls_var>-infoprov AND variant = <ls_var>-variant.
       IF sy-subrc = 0.
-        LOOP AT lt_iobjs ASSIGNING <ls_iobjs>.
-        ENDLOOP.
+        " Map previous variant definition (param/ioinf) to current InfoObjects
+        " since InfoProvider definition or InfoObject selection could have changed
+        _map_infoobject_selection(
+          EXPORTING
+            it_ioinf  = it_ioinf
+            it_iobjs  = lt_iobjs
+          CHANGING
+            ct_params = lt_vari_param ).
       ENDIF.
-
-*      " Map previous variant definition (param/ioinf) to current InfoObjects
-*      " since InfoProvider definition or InfoObject selection could have changed
-*      IF lt_ioinfs <> it_ioinf.
-*
-*        LOOP AT lt_params INTO ls_param ##TODO.
-*          " fieldname > iobjnm
-*          READ TABLE lt_ioinfs INTO ls_ioinf
-*            WITH KEY infoprov = iv_infoprov iobjnm = ls_param-selname.
-*          IF sy-subrc = 0.
-*            " InfoObject still exists
-*          ELSE.
-*            " InfoObject does not exist anymore
-*            DELETE lt_params WHERE selname = ls_param-selname.
-*          ENDIF.
-*        ENDLOOP.
-*
-*      ENDIF.
 
       " Screens
       APPEND INITIAL LINE TO lt_vari_scr ASSIGNING <ls_vari_scr>.
@@ -487,8 +480,7 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
           variant_locked            = 8
           OTHERS                    = 9.
       IF sy-subrc <> 0.
-        BREAK-POINT ID /mbtools/bc.
-        CONTINUE.
+        /mbtools/cx_exception=>raise_t100( ).
       ENDIF.
 
     ENDLOOP.
@@ -507,6 +499,65 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
         screen-input = '1'.
       ENDIF.
       MODIFY SCREEN.
+    ENDLOOP.
+
+  ENDMETHOD.
+
+
+  METHOD _map_infoobject_selection.
+
+    TYPES:
+      BEGIN OF ty_map,
+        field_old TYPE rsfieldnm,
+        field_new TYPE rsfieldnm,
+      END OF ty_map.
+
+    DATA:
+      ls_map TYPE ty_map,
+      lt_map TYPE HASHED TABLE OF ty_map WITH UNIQUE KEY field_old.
+
+    FIELD-SYMBOLS:
+      <ls_ioinf>  LIKE LINE OF it_ioinf,
+      <ls_iobjs>  LIKE LINE OF it_iobjs,
+      <ls_map>    LIKE LINE OF lt_map,
+      <ls_params> LIKE LINE OF ct_params.
+
+    LOOP AT it_iobjs ASSIGNING <ls_iobjs>.
+      READ TABLE it_ioinf ASSIGNING <ls_ioinf>
+        WITH KEY iobjnm = <ls_iobjs>-iobjnm.
+      IF sy-subrc = 0.
+        IF <ls_iobjs>-selname <> <ls_ioinf>-selname.
+          " Map select-option for InfoObject (Cxxx) and field checkbox (Sxxx)
+          CLEAR ls_map.
+          ls_map-field_old = <ls_iobjs>-selname.
+          ls_map-field_new = <ls_ioinf>-selname.
+          INSERT ls_map INTO TABLE lt_map.
+          ls_map-field_old = 'S' && <ls_iobjs>-selname+1(*).
+          ls_map-field_new = 'S' && <ls_ioinf>-selname+1(*).
+          INSERT ls_map INTO TABLE lt_map.
+        ENDIF.
+        IF <ls_iobjs>-sidname <> <ls_ioinf>-sidname.
+          " Map select-option for SID (Dxxx) and field checkbox (Rxxx)
+          CLEAR ls_map.
+          ls_map-field_old = <ls_iobjs>-sidname.
+          ls_map-field_new = <ls_ioinf>-sidname.
+          INSERT ls_map INTO TABLE lt_map.
+          ls_map-field_old = 'R' && <ls_iobjs>-sidname+1(*).
+          ls_map-field_new = 'R' && <ls_ioinf>-sidname+1(*).
+          INSERT ls_map INTO TABLE lt_map.
+        ENDIF.
+      ELSE.
+        " InfoObject does not exist anymore so remove selections
+        DELETE ct_params WHERE selname = <ls_iobjs>-selname OR selname = <ls_iobjs>-sidname.
+      ENDIF.
+    ENDLOOP.
+
+    LOOP AT ct_params ASSIGNING <ls_params>.
+      READ TABLE lt_map ASSIGNING <ls_map>
+        WITH TABLE KEY field_old = <ls_params>-selname.
+      IF sy-subrc = 0.
+        <ls_params>-selname = <ls_map>-field_new.
+      ENDIF.
     ENDLOOP.
 
   ENDMETHOD.
