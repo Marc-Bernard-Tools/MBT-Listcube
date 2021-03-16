@@ -197,7 +197,7 @@
 			"generateReport": true,
 			"generateSubroutine": true,
 			"importDynpro": true,
-			"insertReport": true,
+			"insertReport": false,
 			"kernelCall": true,
 			"severity": "Error",
 			"systemCall": true
@@ -735,7 +735,9 @@
 	},
 	"syntax": {
 		"errorNamespace": "^(/MBTOOLS/|LCL_|LIF_|Y|Z)",
-		"globalConstants": [],
+		"globalConstants": [
+			"icon_biw_info_cube"
+		],
 		"globalMacros": [],
 		"version": "v702"
 	}
