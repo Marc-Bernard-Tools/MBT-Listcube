@@ -86,7 +86,7 @@ DATA:
 
 MODULE pbo_100 OUTPUT.
 
-  go_screen->banner( iv_show = abap_false ).
+  go_screen->banner( abap_false ).
 
   go_app->pbo( ).
 
@@ -129,6 +129,8 @@ INITIALIZATION.
   scr_t200 = 'Select which InfoProvider to view and optionally'(200).
   scr_t201 = 'which variant to use'(201).
 
+  scr_tab-prog = sy-cprog. " abaplint #1291
+
   IF p_dta IS INITIAL.
     GET PARAMETER ID 'RSDQ_INFOPROV' FIELD p_dta.
   ENDIF.
@@ -159,13 +161,13 @@ AT SELECTION-SCREEN OUTPUT.
 
 AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_dta.
 
-  CALL METHOD cl_rsd_dta=>f4
+  cl_rsd_dta=>f4(
     EXPORTING
       i_tlogo    = '%'
     IMPORTING
       e_txtlg    = p_dtatxt
     CHANGING
-      c_infoprov = p_dta.
+      c_infoprov = p_dta ).
 
 *-----------------------------------------------------------------------
 

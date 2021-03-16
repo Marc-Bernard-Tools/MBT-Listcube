@@ -16,7 +16,7 @@ CLASS /mbtools/cl_bw_listcube DEFINITION
       ty_params TYPE STANDARD TABLE OF ty_param WITH DEFAULT KEY .
 
     CONSTANTS:
-      gc_listcube_variant TYPE c LENGTH 20 VALUE '/MBTOOLS/VARIANT' ##NO_TEXT.
+      c_listcube_variant TYPE c LENGTH 20 VALUE '/MBTOOLS/VARIANT' ##NO_TEXT.
 
     CLASS-METHODS get_infoprov_description
       IMPORTING
@@ -156,7 +156,8 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
         SOURCE data = ls_vari_desc
         RESULT XML ls_var-varid.
       IF sy-subrc <> 0.
-        BREAK-POINT.                                       "#EC NOBREAK
+        BREAK-POINT ID /mbtools/bc.                        "#EC NOBREAK
+        CONTINUE.
       ENDIF.
 
       " Values
@@ -164,7 +165,8 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
         SOURCE data = lt_params
         RESULT XML ls_var-params.
       IF sy-subrc <> 0.
-        BREAK-POINT.                                       "#EC NOBREAK
+        BREAK-POINT ID /mbtools/bc.                        "#EC NOBREAK
+        CONTINUE.
       ENDIF.
 
       " InfoObjects
@@ -172,7 +174,8 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
         SOURCE data = it_ioinf
         RESULT XML ls_var-ioinf.
       IF sy-subrc <> 0.
-        BREAK-POINT.                                       "#EC NOBREAK
+        BREAK-POINT ID /mbtools/bc.                        "#EC NOBREAK
+        CONTINUE.
       ENDIF.
 
       " Texts
@@ -184,7 +187,8 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
           SOURCE data = lt_texts
           RESULT XML ls_var-texts.
         IF sy-subrc <> 0.
-          BREAK-POINT.                                     "#EC NOBREAK
+          BREAK-POINT ID /mbtools/bc.                      "#EC NOBREAK
+          CONTINUE.
         ENDIF.
       ENDIF.
 
@@ -192,9 +196,9 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
     ENDLOOP.
 
     " Save changes
-    DELETE FROM /mbtools/bwvars WHERE infoprov = iv_infoprov ##SUBRC_OK.
+    DELETE FROM /mbtools/bwvars WHERE infoprov = iv_infoprov. "#EC CI_SUBRC
 
-    INSERT /mbtools/bwvars FROM TABLE lt_vars ##SUBRC_OK.
+    INSERT /mbtools/bwvars FROM TABLE lt_vars.            "#EC CI_SUBRC
 
     CALL FUNCTION 'RSDU_DB_COMMIT'.
 
@@ -203,7 +207,7 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
 
   METHOD call_listcube.
 
-    EXPORT infoprov = iv_infoprov variant = iv_variant skip = iv_skip TO MEMORY ID gc_listcube_variant.
+    EXPORT infoprov = iv_infoprov variant = iv_variant skip = iv_skip TO MEMORY ID c_listcube_variant.
 
     SUBMIT rsdd_show_icube
       WITH p_dbagg = abap_true
@@ -319,8 +323,8 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
       lv_infoprov TYPE rsinfoprov,
       lv_variant  TYPE rsvariant.
 
-    IMPORT infoprov = lv_infoprov variant = lv_variant skip = ev_skip FROM MEMORY ID gc_listcube_variant.
-    FREE MEMORY ID gc_listcube_variant.
+    IMPORT infoprov = lv_infoprov variant = lv_variant skip = ev_skip FROM MEMORY ID c_listcube_variant.
+    FREE MEMORY ID c_listcube_variant.
 
     SELECT SINGLE params FROM /mbtools/bwvars
       INTO CORRESPONDING FIELDS OF ls_var

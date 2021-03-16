@@ -20,52 +20,35 @@ FUNCTION /mbtools/bw_view_infoprov.
 *"      ILLEGAL_INPUT
 *"      X_MESSAGE
 *"----------------------------------------------------------------------
+
+*>>> MBT Listcube Enhancement
+* Enhanced version of RSDQ_VIEW_INFOPROV
   DATA:
-    l_t_init        TYPE rsdq_t_text,
-    l_t_body        TYPE rsdq_t_text,
-    l_t_selscr      TYPE rsdq_t_text,
-    l_t_tables      TYPE rsdq_t_text,
-    l_t_seltxts     TYPE rsdq_t_seltext,
-    l_t_report      TYPE rsdq_t_text,
-    l_t_datadef     TYPE rsdq_t_text,
-    l_t_prettycode  TYPE rsdq_t_text,
-    l_t_pretcode_ot TYPE rsdrs_t_abapsource, "ot = Other Type
-    l_repnm         LIKE sy-repid,
-    l_subrc         LIKE sy-subrc.
+    lv_skip   TYPE abap_bool,
+    lt_params TYPE /mbtools/cl_bw_listcube=>ty_params.
+*<<< MBT Listcube Enhancement
+
+  DATA:
+    lt_init        TYPE rsdq_t_text,
+    lt_body        TYPE rsdq_t_text,
+    lt_selscr      TYPE rsdq_t_text,
+    lt_tables      TYPE rsdq_t_text,
+    lt_seltxts     TYPE rsdq_t_seltext,
+    lt_report      TYPE rsdq_t_text,
+    lt_datadef     TYPE rsdq_t_text,
+    lt_prettycode  TYPE rsdq_t_text,
+    lt_pretcode_ot TYPE rsdrs_t_abapsource, "ot = Other Type
+    lv_repnm       TYPE sy-repid,
+    lv_subrc       TYPE sy-subrc.
 
 * check, if report name has been provided,
 * otherwise generate report name
   IF i_repnm IS INITIAL.
     PERFORM gen_report_name IN PROGRAM saplrsdq
-      CHANGING l_repnm l_subrc.
+      CHANGING lv_repnm lv_subrc.
   ELSE.
-    l_repnm = i_repnm.
+    lv_repnm = i_repnm.
   ENDIF.
-
-* check, if provided report name is allowed,
-* otherwise ...
-* anyway ... the real check is done in RSDD_SHOW_ICUBE already
-* ... which is BEFORE a possible selection if characteristics
-* ... so I see no need to do it here again!
-****  IF i_repnm IS NOT INITIAL.
-****
-****    PERFORM check_report_name
-****       USING i_repnm
-****       CHANGING l_subrc.
-****
-****    IF l_subrc = 1.
-****      MESSAGE ID 'DBMAN' TYPE 'I' NUMBER 99
-****        WITH 'Selected report name ' i_repnm ' not allowed!'
-****          'Please start name with letter Y or Z.'.
-****      EXIT.
-****    ELSEIF l_subrc > 1.
-****      MESSAGE ID 'DBMAN' TYPE 'I' NUMBER 99
-****        WITH 'Selected report name ' i_repnm ' is already in use!'
-****          'Please choose another name.'.
-****      EXIT.
-****    ENDIF.
-****
-****  ENDIF.
 
 * generate the selection screen of the report
   PERFORM gen_selection_screen IN PROGRAM saplrsdq
@@ -73,57 +56,51 @@ FUNCTION /mbtools/bw_view_infoprov.
              i_show_dimids i_show_sids
              i_use_db_aggregation i_tech_nms
              i_repnm i_tc_no i_tc_id
-    CHANGING c_t_ioinf l_t_selscr l_t_body l_t_init l_t_tables l_t_datadef
-             l_t_seltxts.
+    CHANGING c_t_ioinf lt_selscr lt_body lt_init lt_tables lt_datadef
+             lt_seltxts.
 
 * generate the report body text
   PERFORM gen_report_text IN PROGRAM saplrsdq
-    USING    l_repnm i_repnm i_infoprov i_show_sids
-             l_t_selscr l_t_body l_t_init l_t_tables l_t_datadef
-             c_t_ioinf  l_t_seltxts i_tech_nms i_tc_no i_tc_id
-    CHANGING l_t_report.
+    USING    lv_repnm i_repnm i_infoprov i_show_sids
+             lt_selscr lt_body lt_init lt_tables lt_datadef
+             c_t_ioinf  lt_seltxts i_tech_nms i_tc_no i_tc_id
+    CHANGING lt_report.
 
 *>>> MBT Listcube Enhancement
   " Adjust report to support variants
-  REPLACE 'MESSAGE E222(DBMAN).' IN TABLE l_t_report WITH ''.
+  REPLACE 'MESSAGE E222(DBMAN).' IN TABLE lt_report WITH ''.
 *<<< MBT Listcube Enhancement
 
 * pretty printer
   CALL FUNCTION 'PRETTY_PRINTER'
     EXPORTING
       inctoo = ' '
-    TABLES      "ntext  = l_t_prettycode
-      ntext  = l_t_pretcode_ot
-      otext  = l_t_report.
+    TABLES
+      ntext  = lt_pretcode_ot
+      otext  = lt_report.
 
-  CLEAR l_t_report.
+  CLEAR lt_report.
 
   IF i_show_report = rs_c_true.
-*   EDITOR-CALL FOR l_t_prettycode DISPLAY-MODE."OSS 1357370
-    cl_rsdu_editor=>edit(
-      CHANGING
-        c_t_code = l_t_pretcode_ot ).
+*   EDITOR-CALL FOR lt_prettycode DISPLAY-MODE."OSS 1357370
+    cl_rsdu_editor=>edit( CHANGING c_t_code = lt_pretcode_ot ).
   ENDIF.
 
 * Store report name to be able to delete report after a crash
   CALL FUNCTION 'RSAPOADM_INSERT_REPID'
     EXPORTING
-      i_repid = l_repnm
+      i_repid = lv_repnm
       i_appl  = 'RSDQ/SEL_SCREEN'.
 
 * #CP-SUPPRESS: no direct user input
-  INSERT REPORT l_repnm FROM l_t_pretcode_ot UNICODE ENABLING rs_c_true.
+  INSERT REPORT lv_repnm FROM lt_pretcode_ot UNICODE ENABLING rs_c_true.
 
 *>>> MBT Listcube Enhancement
   " Restore all variants
   /mbtools/cl_bw_listcube=>restore_variants(
     iv_infoprov = i_infoprov
-    iv_repnm    = l_repnm
+    iv_repnm    = lv_repnm
     it_ioinf    = c_t_ioinf ).
-
-  DATA:
-    lv_skip   TYPE abap_bool,
-    lt_params TYPE /mbtools/cl_bw_listcube=>ty_params.
 
   /mbtools/cl_bw_listcube=>get_variant(
     IMPORTING
@@ -132,14 +109,14 @@ FUNCTION /mbtools/bw_view_infoprov.
 
   " Call generated selection report
   IF lt_params IS INITIAL.
-    SUBMIT (l_repnm)
+    SUBMIT (lv_repnm)
       VIA SELECTION-SCREEN AND RETURN.
   ELSEIF lv_skip = abap_true.
-    SUBMIT (l_repnm)
+    SUBMIT (lv_repnm)
       WITH SELECTION-TABLE lt_params
       AND RETURN.
   ELSE.
-    SUBMIT (l_repnm)
+    SUBMIT (lv_repnm)
       WITH SELECTION-TABLE lt_params
       VIA SELECTION-SCREEN AND RETURN.
   ENDIF.
@@ -147,20 +124,20 @@ FUNCTION /mbtools/bw_view_infoprov.
   " Backup all variants
   /mbtools/cl_bw_listcube=>backup_variants(
     iv_infoprov = i_infoprov
-    iv_repnm    = l_repnm
+    iv_repnm    = lv_repnm
     it_ioinf    = c_t_ioinf ).
 *<<< MBT Listcube Enhancement
 
   CALL FUNCTION 'RSAPOADM_DELETE_REPID'
     EXPORTING
-      i_repid = l_repnm.
+      i_repid = lv_repnm.
 
 * delete report, if name not provided by caller
   IF i_repnm IS INITIAL.
 * #CP-SUPPRESS: no direct user input
 
     PERFORM remove_report IN PROGRAM saplrsdq
-      USING l_repnm.
+      USING lv_repnm.
 
   ENDIF.
 
