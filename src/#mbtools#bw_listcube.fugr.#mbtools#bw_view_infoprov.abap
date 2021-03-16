@@ -24,6 +24,7 @@ FUNCTION /mbtools/bw_view_infoprov.
 *>>> MBT Listcube Enhancement
 * Enhanced version of RSDQ_VIEW_INFOPROV
   DATA:
+    lx_error  TYPE REF TO /mbtools/cx_exception,
     lv_skip   TYPE abap_bool,
     lt_params TYPE /mbtools/cl_bw_listcube=>ty_params.
 *<<< MBT Listcube Enhancement
@@ -97,10 +98,15 @@ FUNCTION /mbtools/bw_view_infoprov.
 
 *>>> MBT Listcube Enhancement
   " Restore all variants
-  /mbtools/cl_bw_listcube=>restore_variants(
-    iv_infoprov = i_infoprov
-    iv_repnm    = lv_repnm
-    it_ioinf    = c_t_ioinf ).
+  TRY.
+      /mbtools/cl_bw_listcube=>restore_variants(
+        iv_infoprov = i_infoprov
+        iv_repnm    = lv_repnm
+        it_ioinf    = c_t_ioinf ).
+    CATCH /mbtools/cx_exception INTO lx_error.
+      MESSAGE lx_error TYPE 'S' DISPLAY LIKE 'E'.
+      RETURN.
+  ENDTRY.
 
   /mbtools/cl_bw_listcube=>get_variant(
     IMPORTING
@@ -122,10 +128,15 @@ FUNCTION /mbtools/bw_view_infoprov.
   ENDIF.
 
   " Backup all variants
-  /mbtools/cl_bw_listcube=>backup_variants(
-    iv_infoprov = i_infoprov
-    iv_repnm    = lv_repnm
-    it_ioinf    = c_t_ioinf ).
+  TRY.
+      /mbtools/cl_bw_listcube=>backup_variants(
+        iv_infoprov = i_infoprov
+        iv_repnm    = lv_repnm
+        it_ioinf    = c_t_ioinf ).
+    CATCH /mbtools/cx_exception INTO lx_error.
+      MESSAGE lx_error TYPE 'S' DISPLAY LIKE 'E'.
+      RETURN.
+  ENDTRY.
 *<<< MBT Listcube Enhancement
 
   CALL FUNCTION 'RSAPOADM_DELETE_REPID'

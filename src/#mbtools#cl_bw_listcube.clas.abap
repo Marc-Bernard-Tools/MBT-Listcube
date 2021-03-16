@@ -41,12 +41,16 @@ CLASS /mbtools/cl_bw_listcube DEFINITION
       IMPORTING
         !iv_infoprov TYPE rsddatatarget
         !iv_repnm    TYPE sy-repid
-        !it_ioinf    TYPE rsdq_t_iobj_info .
+        !it_ioinf    TYPE rsdq_t_iobj_info
+      RAISING
+        /mbtools/cx_exception.
     CLASS-METHODS restore_variants
       IMPORTING
         !iv_infoprov TYPE rsddatatarget
         !iv_repnm    TYPE sy-repid
-        !it_ioinf    TYPE rsdq_t_iobj_info .
+        !it_ioinf    TYPE rsdq_t_iobj_info
+      RAISING
+        /mbtools/cx_exception.
     METHODS initialize .
     METHODS pbo .
     METHODS pai
@@ -80,19 +84,16 @@ CLASS /mbtools/cl_bw_listcube DEFINITION
     TYPES:
       ty_texts  TYPE STANDARD TABLE OF ty_text WITH DEFAULT KEY.
 
-
     CLASS-METHODS _set_optimistic_lock
       IMPORTING
         !iv_infoprov TYPE rsddatatarget
       RAISING
         /mbtools/cx_exception.
-
     CLASS-METHODS _promote_lock
       IMPORTING
         !iv_infoprov TYPE rsddatatarget
       RAISING
         /mbtools/cx_exception.
-
     CLASS-METHODS _release_lock
       IMPORTING
         !iv_infoprov TYPE rsddatatarget

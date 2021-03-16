@@ -87,6 +87,24 @@
      <LANGU>E</LANGU>
      <DESCRIPT>Screen</DESCRIPT>
     </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>/MBTOOLS/CL_BW_LISTCUBE</CLSNAME>
+     <CMPNAME>_PROMOTE_LOCK</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Get exclusive lock just before saving</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>/MBTOOLS/CL_BW_LISTCUBE</CLSNAME>
+     <CMPNAME>_RELEASE_LOCK</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Called after deleting or before re-acquiring</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>/MBTOOLS/CL_BW_LISTCUBE</CLSNAME>
+     <CMPNAME>_SET_OPTIMISTIC_LOCK</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Always set when (re-)reading an entry</DESCRIPT>
+    </SEOCOMPOTX>
    </DESCRIPTIONS>
   </asx:values>
  </asx:abap>
