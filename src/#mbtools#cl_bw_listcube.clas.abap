@@ -66,9 +66,6 @@ CLASS /mbtools/cl_bw_listcube DEFINITION
 
   PRIVATE SECTION.
 
-    TYPES ty_var TYPE /mbtools/bwvars.
-    TYPES:
-      ty_vars TYPE STANDARD TABLE OF ty_var WITH DEFAULT KEY.
     TYPES:
       BEGIN OF ty_value,
         variant TYPE rsvariant,
@@ -76,13 +73,6 @@ CLASS /mbtools/cl_bw_listcube DEFINITION
       END OF ty_value.
     TYPES:
       ty_values TYPE STANDARD TABLE OF ty_value WITH DEFAULT KEY.
-    TYPES:
-      BEGIN OF ty_text,
-        langu TYPE sy-langu,
-        vtext TYPE rvart_vtxt,
-      END OF ty_text.
-    TYPES:
-      ty_texts  TYPE STANDARD TABLE OF ty_text WITH DEFAULT KEY.
 
     CLASS-METHODS _set_optimistic_lock
       IMPORTING
@@ -109,8 +99,6 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
   METHOD backup_variants.
 
     DATA:
-      ls_var        TYPE ty_var,
-      lt_vars       TYPE ty_vars,
       ls_prog_range TYPE rsprorange,
       lt_prog_range TYPE TABLE OF rsprorange,
       lt_var_range  TYPE TABLE OF rsvarrange,
@@ -119,11 +107,21 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
       lt_changed_by TYPE TABLE OF rsnamrange,
       lt_creadate   TYPE TABLE OF rsdatrange,
       lt_changedate TYPE TABLE OF rsdatrange,
-      ls_variant    TYPE rsvariinfo,
       lt_variants   TYPE TABLE OF rsvariinfo,
-      ls_vari_desc  TYPE varid,
-      lt_params     TYPE ty_params,
-      lt_texts      TYPE ty_texts.
+      lt_valutab    TYPE TABLE OF rsparamsl_255,
+      lt_var        TYPE TABLE OF /mbtools/bwvars,
+      lt_iobjs      TYPE TABLE OF /mbtools/bwvarsi,
+      lt_params     TYPE TABLE OF /mbtools/bwvarsp,
+      lt_texts      TYPE TABLE OF /mbtools/bwvarst.
+
+    FIELD-SYMBOLS:
+      <ls_variant> LIKE LINE OF lt_variants,
+      <ls_var>     LIKE LINE OF lt_var,
+      <ls_valu>    LIKE LINE OF lt_valutab,
+      <ls_params>  LIKE LINE OF lt_params,
+      <ls_ioinf>   LIKE LINE OF it_ioinf,
+      <ls_iobjs>   LIKE LINE OF lt_iobjs,
+      <ls_texts>   LIKE LINE OF lt_texts.
 
     _set_optimistic_lock( iv_infoprov ).
 
@@ -144,81 +142,68 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
         changedate   = lt_changedate
         variant_info = lt_variants.
 
-    LOOP AT lt_variants INTO ls_variant.
-      CLEAR: ls_var.
-      ls_var-infoprov = iv_infoprov.
-      ls_var-variant  = ls_variant-variant.
+    LOOP AT lt_variants ASSIGNING <ls_variant>.
+      APPEND INITIAL LINE TO lt_var ASSIGNING <ls_var>.
+      <ls_var>-infoprov = iv_infoprov.
+      MOVE-CORRESPONDING <ls_variant> TO <ls_var>.
 
-      MOVE-CORRESPONDING ls_variant TO ls_vari_desc.
-
-      " Read variant
+      " Read variant content
       CALL FUNCTION 'RS_VARIANT_CONTENTS_255'
         EXPORTING
-          report               = ls_vari_desc-report
-          variant              = ls_vari_desc-variant
+          report               = <ls_variant>-report
+          variant              = <ls_variant>-variant
           move_or_write        = 'M'
           execute_direct       = 'X'
         TABLES
-          valutab              = lt_params
+          valutab              = lt_valutab
         EXCEPTIONS
           variant_non_existent = 1
           variant_obsolete     = 2
           OTHERS               = 3.
       IF sy-subrc <> 0.
-        BREAK-POINT ID /mbtools/bc.
-        CONTINUE.
+        /mbtools/cx_exception=>raise_t100( ).
       ENDIF.
 
-      " Definition
-      CALL TRANSFORMATION id
-        SOURCE data = ls_vari_desc
-        RESULT XML ls_var-varid.
-      IF sy-subrc <> 0.
-        BREAK-POINT ID /mbtools/bc.
-        CONTINUE.
-      ENDIF.
-
-      " Values
-      CALL TRANSFORMATION id
-        SOURCE data = lt_params
-        RESULT XML ls_var-params.
-      IF sy-subrc <> 0.
-        BREAK-POINT ID /mbtools/bc.
-        CONTINUE.
-      ENDIF.
+      LOOP AT lt_valutab ASSIGNING <ls_valu>.
+        APPEND INITIAL LINE TO lt_params ASSIGNING <ls_params>.
+        <ls_params>-pos = sy-tabix.
+        MOVE-CORRESPONDING <ls_var> TO <ls_params>.
+        MOVE-CORRESPONDING <ls_valu> TO <ls_params>.
+        <ls_params>-opt = <ls_valu>-option.
+      ENDLOOP.
 
       " InfoObjects
-      CALL TRANSFORMATION id
-        SOURCE data = it_ioinf
-        RESULT XML ls_var-ioinf.
-      IF sy-subrc <> 0.
-        BREAK-POINT ID /mbtools/bc.
-        CONTINUE.
-      ENDIF.
+      LOOP AT it_ioinf ASSIGNING <ls_ioinf>.
+        APPEND INITIAL LINE TO lt_iobjs ASSIGNING <ls_iobjs>.
+        MOVE-CORRESPONDING <ls_var> TO <ls_iobjs>.
+        MOVE-CORRESPONDING <ls_ioinf> TO <ls_iobjs>.
+      ENDLOOP.
 
       " Texts
-      SELECT langu vtext FROM varit
-        INTO CORRESPONDING FIELDS OF TABLE lt_texts
-        WHERE report = iv_repnm AND variant = ls_var-variant.
+      SELECT langu vtext FROM varit INTO CORRESPONDING FIELDS OF TABLE lt_texts
+        WHERE report = <ls_var>-report AND variant = <ls_var>-variant ##TOO_MANY_ITAB_FIELDS.
       IF sy-subrc = 0.
-        CALL TRANSFORMATION id
-          SOURCE data = lt_texts
-          RESULT XML ls_var-texts.
-        IF sy-subrc <> 0.
-          BREAK-POINT ID /mbtools/bc.
-          CONTINUE.
-        ENDIF.
+        LOOP AT lt_texts ASSIGNING <ls_texts>.
+          MOVE-CORRESPONDING <ls_var> TO <ls_texts>.
+        ENDLOOP.
       ENDIF.
 
-      APPEND ls_var TO lt_vars.
     ENDLOOP.
 
     " Save changes
     _promote_lock( iv_infoprov ).
 
     DELETE FROM /mbtools/bwvars WHERE infoprov = iv_infoprov. "#EC CI_SUBRC
+    INSERT /mbtools/bwvars FROM TABLE lt_var.             "#EC CI_SUBRC
 
-    INSERT /mbtools/bwvars FROM TABLE lt_vars.            "#EC CI_SUBRC
+    DELETE FROM /mbtools/bwvarsp WHERE infoprov = iv_infoprov. "#EC CI_SUBRC
+    INSERT /mbtools/bwvarsp FROM TABLE lt_params.         "#EC CI_SUBRC
+
+    DELETE FROM /mbtools/bwvarsi WHERE infoprov = iv_infoprov. "#EC CI_SUBRC
+    INSERT /mbtools/bwvarsi FROM TABLE lt_iobjs.          "#EC CI_SUBRC
+
+    DELETE FROM /mbtools/bwvarst WHERE infoprov = iv_infoprov. "#EC CI_SUBRC
+    INSERT /mbtools/bwvarst FROM TABLE lt_texts.          "#EC CI_SUBRC
 
     CALL FUNCTION 'RSDU_DB_COMMIT'.
 
@@ -246,62 +231,61 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
   METHOD f4_variant.
 
     DATA:
-      ls_var    TYPE ty_var,
-      lt_vars   TYPE ty_vars,
-      ls_text   TYPE ty_text,
-      lt_texts  TYPE ty_texts,
-      ls_value  TYPE ty_value,
+      lt_var    TYPE TABLE OF /mbtools/bwvars-variant,
+      lt_texts  TYPE TABLE OF /mbtools/bwvarst,
       lt_values TYPE ty_values,
-      ls_return TYPE ddshretval,
       lt_return TYPE TABLE OF ddshretval.
 
-    SELECT variant texts FROM /mbtools/bwvars
-      INTO CORRESPONDING FIELDS OF TABLE lt_vars
-      WHERE infoprov = iv_infoprov ##TOO_MANY_ITAB_FIELDS.
+    FIELD-SYMBOLS:
+      <lv_var>    LIKE LINE OF lt_var,
+      <ls_texts>  LIKE LINE OF lt_texts,
+      <ls_value>  LIKE LINE OF lt_values,
+      <ls_return> TYPE ddshretval.
+
+    SELECT variant FROM /mbtools/bwvars INTO TABLE lt_var
+      WHERE infoprov = iv_infoprov.
     IF sy-subrc <> 0.
       MESSAGE 'No variant found'(001) TYPE 'S'.
       RETURN.
     ENDIF.
 
-    LOOP AT lt_vars INTO ls_var.
-      CLEAR ls_value.
-      ls_value-variant = ls_var-variant.
+    SELECT * FROM /mbtools/bwvarst INTO TABLE lt_texts
+      WHERE infoprov = iv_infoprov.                       "#EC CI_SUBRC
 
-      CALL TRANSFORMATION id
-        SOURCE XML ls_var-texts
-        RESULT data = lt_texts.
-      CHECK sy-subrc = 0.
+    LOOP AT lt_var ASSIGNING <lv_var>.
+      APPEND INITIAL LINE TO lt_values ASSIGNING <ls_value>.
+      <ls_value>-variant = <lv_var>.
 
-      READ TABLE lt_texts INTO ls_text
-        WITH KEY langu = sy-langu.
+      READ TABLE lt_texts ASSIGNING <ls_texts>
+        WITH KEY variant = <lv_var> langu = sy-langu.
       IF sy-subrc = 0.
-        ls_value-vtext = ls_text-vtext.
+        <ls_value>-vtext = <ls_texts>-vtext.
       ENDIF.
-      APPEND ls_value TO lt_values.
     ENDLOOP.
 
     CALL FUNCTION 'F4IF_INT_TABLE_VALUE_REQUEST'
       EXPORTING
         retfield        = 'VARIANT'
         window_title    = 'MBT Listcube Variants'
-        value_org       = 'S'
+        value_org       = 'S' "single
       TABLES
         value_tab       = lt_values
         return_tab      = lt_return
       EXCEPTIONS
         parameter_error = 1
         no_values_found = 2
-        OTHERS          = 3.
+        OTHERS          = 3 ##NO_TEXT.
     CHECK sy-subrc = 0.
 
-    LOOP AT lt_return INTO ls_return.
-      ev_variant = ls_return-fieldval.
-    ENDLOOP.
+    READ TABLE lt_return ASSIGNING <ls_return> INDEX 1.
+    IF sy-subrc = 0.
+      ev_variant = <ls_return>-fieldval.
+    ENDIF.
 
-    READ TABLE lt_values INTO ls_value
+    READ TABLE lt_values ASSIGNING <ls_value>
       WITH KEY variant = ev_variant.
     IF sy-subrc = 0.
-      ev_vartxt = ls_value-vtext.
+      ev_vartxt = <ls_value>-vtext.
     ENDIF.
 
   ENDMETHOD.
@@ -341,48 +325,37 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
   METHOD get_variant.
 
     DATA:
-      ls_var      TYPE ty_var,
       lv_infoprov TYPE rsinfoprov,
-      lv_variant  TYPE rsvariant.
+      lv_variant  TYPE rsvariant,
+      lt_params   TYPE TABLE OF /mbtools/bwvarsp.
+
+    FIELD-SYMBOLS:
+      <ls_params>     LIKE LINE OF lt_params,
+      <ls_params_out> LIKE LINE OF et_params.
 
     IMPORT infoprov = lv_infoprov variant = lv_variant skip = ev_skip FROM MEMORY ID c_listcube_variant.
     FREE MEMORY ID c_listcube_variant.
 
-    SELECT SINGLE params FROM /mbtools/bwvars
-      INTO CORRESPONDING FIELDS OF ls_var
+    SELECT * FROM /mbtools/bwvarsp
+      INTO CORRESPONDING FIELDS OF TABLE lt_params
       WHERE infoprov = lv_infoprov AND variant = lv_variant.
     CHECK sy-subrc = 0.
 
-    CALL TRANSFORMATION id
-      SOURCE XML ls_var-params
-      RESULT data = et_params.
-    CHECK sy-subrc = 0.
+    LOOP AT lt_params ASSIGNING <ls_params>.
+      APPEND INITIAL LINE TO et_params ASSIGNING <ls_params_out>.
+      MOVE-CORRESPONDING <ls_params> TO <ls_params_out>.
+      <ls_params_out>-option = <ls_params>-opt.
+    ENDLOOP.
 
   ENDMETHOD.
 
 
   METHOD get_variant_description.
 
-    DATA:
-      ls_var   TYPE ty_var,
-      ls_text  TYPE ty_text,
-      lt_texts TYPE ty_texts.
-
-    SELECT SINGLE texts FROM /mbtools/bwvars
-      INTO CORRESPONDING FIELDS OF ls_var
-      WHERE infoprov = iv_infoprov AND variant = iv_variant.
+    SELECT SINGLE vtext FROM /mbtools/bwvarst INTO rv_result
+      WHERE infoprov = iv_infoprov AND variant = iv_variant AND langu = sy-langu.
     CHECK sy-subrc = 0.
 
-    CALL TRANSFORMATION id
-      SOURCE XML ls_var-texts
-      RESULT data = lt_texts.
-    CHECK sy-subrc = 0.
-
-    READ TABLE lt_texts INTO ls_text
-      WITH KEY langu = sy-langu.
-    IF sy-subrc = 0.
-      rv_result = ls_text-vtext.
-    ENDIF.
 
   ENDMETHOD.
 
@@ -405,98 +378,90 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
   METHOD restore_variants.
 
     DATA:
-      ls_var       TYPE ty_var,
-      lt_vars      TYPE ty_vars,
-      ls_vari_desc TYPE varid,
-      ls_vari_text TYPE varit,
-      lt_vari_text TYPE TABLE OF varit,
-      ls_vari_scr  TYPE rsdynnr,
-      lt_vari_scr  TYPE TABLE OF rsdynnr,
-      ls_param     TYPE ty_param,
-      lt_params    TYPE ty_params,
-      ls_text      TYPE ty_text,
-      lt_texts     TYPE ty_texts,
-      ls_ioinf     TYPE rsdq_s_iobj_info,
-      lt_ioinfs    TYPE rsdq_t_iobj_info.
+      lt_var        TYPE TABLE OF /mbtools/bwvars,
+      lt_iobjs      TYPE TABLE OF /mbtools/bwvarsi,
+      lt_params     TYPE TABLE OF /mbtools/bwvarsp,
+      lt_texts      TYPE TABLE OF /mbtools/bwvarst,
+      ls_vari_desc  TYPE varid,
+      lt_vari_text  TYPE TABLE OF varit,
+      lt_vari_scr   TYPE TABLE OF rsdynnr,
+      lt_vari_param TYPE ty_params.
 
-    SELECT * FROM /mbtools/bwvars INTO TABLE lt_vars
-      WHERE infoprov = iv_infoprov.
+    FIELD-SYMBOLS:
+      <ls_var>        LIKE LINE OF lt_var,
+      <ls_params>     LIKE LINE OF lt_params,
+      <ls_ioinf>      LIKE LINE OF it_ioinf,
+      <ls_iobjs>      LIKE LINE OF lt_iobjs,
+      <ls_texts>      LIKE LINE OF lt_texts,
+      <ls_vari_text>  LIKE LINE OF lt_vari_text,
+      <ls_vari_scr>   LIKE LINE OF lt_vari_scr,
+      <ls_vari_param> LIKE LINE OF lt_vari_param.
+
+    SELECT * FROM /mbtools/bwvars INTO TABLE lt_var WHERE infoprov = iv_infoprov.
     CHECK sy-subrc = 0.
 
-    LOOP AT lt_vars INTO ls_var.
-      CLEAR: ls_vari_desc, lt_vari_text, lt_vari_scr, lt_texts.
+    LOOP AT lt_var ASSIGNING <ls_var>.
+      CLEAR: ls_vari_desc, lt_vari_text, lt_vari_scr, lt_vari_param.
 
-      " Definition
-      CALL TRANSFORMATION id
-        SOURCE XML ls_var-varid
-        RESULT data = ls_vari_desc.
-      IF sy-subrc <> 0.
-        BREAK-POINT ID /mbtools/bc.
-        CONTINUE.
-      ENDIF.
-
+      " Definitions
+      MOVE-CORRESPONDING <ls_var> TO ls_vari_desc.
       ls_vari_desc-report = iv_repnm.
 
       " Values
-      CALL TRANSFORMATION id
-        SOURCE XML ls_var-params
-        RESULT data = lt_params.
-      IF sy-subrc <> 0.
-        BREAK-POINT ID /mbtools/bc.
-        CONTINUE.
+      SELECT * FROM /mbtools/bwvarsp INTO TABLE lt_params
+        WHERE infoprov = <ls_var>-infoprov AND variant = <ls_var>-variant.
+      IF sy-subrc = 0.
+        LOOP AT lt_params ASSIGNING <ls_params>.
+          APPEND INITIAL LINE TO lt_vari_param ASSIGNING <ls_vari_param>.
+          MOVE-CORRESPONDING <ls_params> TO <ls_vari_param>.
+          <ls_vari_param>-option = <ls_params>-opt.
+        ENDLOOP.
       ENDIF.
+
 
       " Texts
-      CALL TRANSFORMATION id
-        SOURCE XML ls_var-texts
-        RESULT data = lt_texts.
-      IF sy-subrc <> 0.
-        BREAK-POINT ID /mbtools/bc.
-        CONTINUE.
+      SELECT * FROM /mbtools/bwvarst INTO TABLE lt_texts
+        WHERE infoprov = <ls_var>-infoprov AND variant = <ls_var>-variant.
+      IF sy-subrc = 0.
+        LOOP AT lt_texts ASSIGNING <ls_texts>.
+          APPEND INITIAL LINE TO lt_vari_text ASSIGNING <ls_vari_text>.
+          MOVE-CORRESPONDING <ls_texts> TO <ls_vari_text>.
+          <ls_vari_text>-mandt = sy-mandt.
+          <ls_vari_text>-report = iv_repnm.
+        ENDLOOP.
       ENDIF.
-
-      LOOP AT lt_texts INTO ls_text.
-        CLEAR ls_vari_text.
-        ls_vari_text-mandt   = sy-mandt.
-        ls_vari_text-langu   = ls_text-langu.
-        ls_vari_text-report  = iv_repnm.
-        ls_vari_text-variant = ls_var-variant.
-        ls_vari_text-vtext   = ls_text-vtext.
-        APPEND ls_vari_text TO lt_vari_text.
-      ENDLOOP.
 
       " InfoObjects
-      CALL TRANSFORMATION id
-        SOURCE XML ls_var-ioinf
-        RESULT data = lt_ioinfs.
-      IF sy-subrc <> 0.
-        BREAK-POINT ID /mbtools/bc.
-        CONTINUE.
-      ENDIF.
-
-      " Map previous variant definition (param/ioinf) to current InfoObjects
-      " since InfoProvider definition or InfoObject selection could have changed
-      IF lt_ioinfs <> it_ioinf.
-
-        LOOP AT lt_params INTO ls_param ##TODO.
-          " fieldname > iobjnm
-          READ TABLE lt_ioinfs INTO ls_ioinf
-            WITH KEY infoprov = iv_infoprov iobjnm = ls_param-selname.
-          IF sy-subrc = 0.
-            " InfoObject still exists
-          ELSE.
-            " InfoObject does not exist anymore
-            DELETE lt_params WHERE selname = ls_param-selname.
-          ENDIF.
+      SELECT * FROM /mbtools/bwvarsi INTO TABLE lt_iobjs
+        WHERE infoprov = <ls_var>-infoprov AND variant = <ls_var>-variant.
+      IF sy-subrc = 0.
+        LOOP AT lt_iobjs ASSIGNING <ls_iobjs>.
         ENDLOOP.
-
       ENDIF.
+
+*      " Map previous variant definition (param/ioinf) to current InfoObjects
+*      " since InfoProvider definition or InfoObject selection could have changed
+*      IF lt_ioinfs <> it_ioinf.
+*
+*        LOOP AT lt_params INTO ls_param ##TODO.
+*          " fieldname > iobjnm
+*          READ TABLE lt_ioinfs INTO ls_ioinf
+*            WITH KEY infoprov = iv_infoprov iobjnm = ls_param-selname.
+*          IF sy-subrc = 0.
+*            " InfoObject still exists
+*          ELSE.
+*            " InfoObject does not exist anymore
+*            DELETE lt_params WHERE selname = ls_param-selname.
+*          ENDIF.
+*        ENDLOOP.
+*
+*      ENDIF.
 
       " Screens
-      ls_vari_scr-dynnr = '0001'.
-      APPEND ls_vari_scr TO lt_vari_scr.
-      ls_vari_scr-dynnr = '1000'.
-      APPEND ls_vari_scr TO lt_vari_scr.
+      APPEND INITIAL LINE TO lt_vari_scr ASSIGNING <ls_vari_scr>.
+      <ls_vari_scr>-dynnr = '0001'.
+      APPEND INITIAL LINE TO lt_vari_scr ASSIGNING <ls_vari_scr>.
+      <ls_vari_scr>-dynnr = '1000'.
 
       " Variants might already exist for report (if it's not generated)
       ASSERT 0 = 0 ##TODO.
@@ -508,7 +473,7 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
           curr_variant              = ls_vari_desc-variant
           vari_desc                 = ls_vari_desc
         TABLES
-          vari_contents             = lt_params
+          vari_contents             = lt_vari_param
           vari_text                 = lt_vari_text
           vscreens                  = lt_vari_scr
         EXCEPTIONS

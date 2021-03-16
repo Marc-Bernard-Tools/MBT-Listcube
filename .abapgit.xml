@@ -16,22 +16,22 @@
     </item>
    </REQUIREMENTS>
    <PACKAGING>
-    <NAME>mbtools/mbt-listcube</NAME>
+    <NAME>MBT-Listcube</NAME>
     <VERSION>1.0.0</VERSION>
     <SEM_VERSION>
      <MAJOR>1</MAJOR>
     </SEM_VERSION>
-    <DESCRIPTION>Variants for transaction LISTCUBE: Simple, powerful, free!</DESCRIPTION>
-    <GIT_URL>https://github.com/mbtools/MBT_Listcube</GIT_URL>
+    <DESCRIPTION>Variants for Transaction LISTCUBE: Simple, Powerful, Free!</DESCRIPTION>
+    <GIT_URL>https://github.com/Marc-Bernard-Tools/MBT-Listcube</GIT_URL>
     <TARGET_PACKAGE>/MBTOOLS/BW_LISTCUBE</TARGET_PACKAGE>
     <DEPENDENCIES>
      <item>
-      <NAME>mbtools/mbt-base</NAME>
+      <NAME>MBT-Base</NAME>
       <VERSION>1.0.0</VERSION>
       <SEM_VERSION>
        <MAJOR>1</MAJOR>
       </SEM_VERSION>
-      <GIT_URL>https://github.com/mbtools/Marc_Bernard_Tools</GIT_URL>
+      <GIT_URL>https://github.com/Marc-Bernard-Tools/MBT-Base</GIT_URL>
       <TARGET_PACKAGE>/MBTOOLS/BC</TARGET_PACKAGE>
      </item>
     </DEPENDENCIES>
