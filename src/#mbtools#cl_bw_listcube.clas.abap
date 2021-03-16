@@ -193,7 +193,8 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
     ENDLOOP.
 
     " Save changes
-    DELETE FROM /mbtools/bwvars WHERE infoprov = iv_infoprov. "#EC CI_SUBRC
+    " TODO enqueue
+    DELETE FROM /mbtools/bwvars WHERE infoprov = iv_infoprov ##TODO. "#EC CI_SUBRC
 
     INSERT /mbtools/bwvars FROM TABLE lt_vars.            "#EC CI_SUBRC
 
@@ -379,7 +380,7 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
       lt_params    TYPE ty_params,
       ls_text      TYPE ty_text,
       lt_texts     TYPE ty_texts,
-      "ls_ioinf     TYPE rsdq_s_iobj_info
+      ls_ioinf     TYPE rsdq_s_iobj_info,
       lt_ioinfs    TYPE rsdq_t_iobj_info.
 
     SELECT * FROM /mbtools/bwvars INTO TABLE lt_vars
@@ -422,14 +423,15 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
       " since InfoProvider definition or InfoObject selection
       " could have changed
       LOOP AT lt_params INTO ls_param ##TODO.
-*        READ TABLE lt_ioinfs INTO ls_ioinf
-*          WITH KEY infoprov = iv_infoprov iobjnm = ls_ioinf-iobjnm
-*        IF sy-subrc = 0
-*          " InfoObject still exists
-*        ELSE
-*          " InfoObject does not exist anymore
-*          DELETE lt_param WHERE selname = ls_ioinf-selname
-*        ENDIF
+        " fieldname > iobjnm
+        READ TABLE lt_ioinfs INTO ls_ioinf
+          WITH KEY infoprov = iv_infoprov iobjnm = ls_param-selname.
+        IF sy-subrc = 0.
+          " InfoObject still exists
+        ELSE.
+          " InfoObject does not exist anymore
+          DELETE lt_params WHERE selname = ls_param-selname.
+        ENDIF.
       ENDLOOP.
 
       " Texts
