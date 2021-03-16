@@ -203,7 +203,9 @@
 			"systemCall": true
 		},
 		"db_operation_in_loop": {
-			"exclude": [],
+			"exclude": [
+				"#mbtools#cl_bw_listcube.clas.abap"
+			],
 			"severity": "Error"
 		},
 		"definitions_top": {
