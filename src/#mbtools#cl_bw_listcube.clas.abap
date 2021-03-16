@@ -9,8 +9,6 @@ CLASS /mbtools/cl_bw_listcube DEFINITION
 * (c) MBT 2021 https://marcbernardtools.com/
 ************************************************************************
   PUBLIC SECTION.
-    TYPE-POOLS icon .
-
     TYPES ty_param TYPE rsparamsl_255 .
     TYPES:
       ty_params TYPE STANDARD TABLE OF ty_param WITH DEFAULT KEY .
@@ -82,8 +80,6 @@ CLASS /mbtools/cl_bw_listcube DEFINITION
     TYPES:
       ty_texts  TYPE STANDARD TABLE OF ty_text WITH DEFAULT KEY.
 
-    DATA mv_infoprov TYPE rsinfoprov.
-    DATA mv_variant TYPE rsvariant.
 ENDCLASS.
 
 
@@ -107,9 +103,7 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
       ls_variant    TYPE rsvariinfo,
       lt_variants   TYPE TABLE OF rsvariinfo,
       ls_vari_desc  TYPE varid,
-      ls_param      TYPE ty_param,
       lt_params     TYPE ty_params,
-      ls_text       TYPE ty_text,
       lt_texts      TYPE ty_texts.
 
     " Get all variants
@@ -294,25 +288,13 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
       lo_dta TYPE REF TO if_rsd_dta,
       ls_dta TYPE rsd_s_dta.
 
-    CALL METHOD cl_rsd_dta=>factory
-      EXPORTING
-        i_infoprov = iv_infoprov
-      RECEIVING
-        r_r_dta    = lo_dta
-      EXCEPTIONS
-        not_found  = 1
-        OTHERS     = 2.
-    CHECK sy-subrc = 0.
+    TRY.
+        lo_dta = cl_rsd_dta=>factory( iv_infoprov ).
 
-    CALL METHOD lo_dta->dta_get_info
-      IMPORTING
-        e_s_dta         = ls_dta
-      EXCEPTIONS
-        dta_not_found   = 1
-        iobj_not_found  = 2
-        objvers_invalid = 3
-        OTHERS          = 4.
-    CHECK sy-subrc = 0.
+        lo_dta->dta_get_info( IMPORTING e_s_dta = ls_dta ).
+      CATCH cx_root.
+        RETURN.
+    ENDTRY.
 
     rv_result = ls_dta-txtlg.
 
@@ -346,7 +328,6 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
 
     DATA:
       ls_var   TYPE ty_var,
-      lt_vars  TYPE ty_vars,
       ls_text  TYPE ty_text,
       lt_texts TYPE ty_texts.
 
@@ -370,19 +351,17 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
 
 
   METHOD initialize.
-
+    ASSERT 0 = 0.
   ENDMETHOD.
 
 
   METHOD pai.
-
     CLEAR cv_ok_code.
-
   ENDMETHOD.
 
 
   METHOD pbo.
-
+    ASSERT 0 = 0.
   ENDMETHOD.
 
 
@@ -400,7 +379,7 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
       lt_params    TYPE ty_params,
       ls_text      TYPE ty_text,
       lt_texts     TYPE ty_texts,
-      ls_ioinf     TYPE rsdq_s_iobj_info,
+      "ls_ioinf     TYPE rsdq_s_iobj_info
       lt_ioinfs    TYPE rsdq_t_iobj_info.
 
     SELECT * FROM /mbtools/bwvars INTO TABLE lt_vars
