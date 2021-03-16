@@ -313,13 +313,25 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
       lo_dta TYPE REF TO if_rsd_dta,
       ls_dta TYPE rsd_s_dta.
 
-    TRY.
-        lo_dta = cl_rsd_dta=>factory( iv_infoprov ).
+    cl_rsd_dta=>factory(
+      EXPORTING
+        i_infoprov        = iv_infoprov
+      RECEIVING
+        r_r_dta           = lo_dta
+      EXCEPTIONS
+        not_found         = 1
+        OTHERS            = 2 ).
+    CHECK sy-subrc = 0.
 
-        lo_dta->dta_get_info( IMPORTING e_s_dta = ls_dta ).
-      CATCH cx_root.
-        RETURN.
-    ENDTRY.
+    lo_dta->dta_get_info(
+      IMPORTING
+        e_s_dta            = ls_dta
+      EXCEPTIONS
+        dta_not_found      = 1
+        iobj_not_found     = 2
+        objvers_invalid    = 3
+        OTHERS             = 4 ).
+    CHECK sy-subrc = 0.
 
     rv_result = ls_dta-txtlg.
 
