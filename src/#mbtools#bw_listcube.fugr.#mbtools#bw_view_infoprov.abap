@@ -52,18 +52,18 @@ FUNCTION /mbtools/bw_view_infoprov.
 
 * generate the selection screen of the report
   PERFORM gen_selection_screen IN PROGRAM saplrsdq
-    USING    i_infoprov i_s_dta i_t_dta_dime
-             i_show_dimids i_show_sids
-             i_use_db_aggregation i_tech_nms
-             i_repnm i_tc_no i_tc_id
+    USING i_infoprov i_s_dta i_t_dta_dime
+          i_show_dimids i_show_sids
+          i_use_db_aggregation i_tech_nms
+          i_repnm i_tc_no i_tc_id
     CHANGING c_t_ioinf lt_selscr lt_body lt_init lt_tables lt_datadef
              lt_seltxts.
 
 * generate the report body text
   PERFORM gen_report_text IN PROGRAM saplrsdq
-    USING    lv_repnm i_repnm i_infoprov i_show_sids
-             lt_selscr lt_body lt_init lt_tables lt_datadef
-             c_t_ioinf  lt_seltxts i_tech_nms i_tc_no i_tc_id
+    USING lv_repnm i_repnm i_infoprov i_show_sids
+          lt_selscr lt_body lt_init lt_tables lt_datadef
+          c_t_ioinf  lt_seltxts i_tech_nms i_tc_no i_tc_id
     CHANGING lt_report.
 
 *>>> MBT Listcube Enhancement

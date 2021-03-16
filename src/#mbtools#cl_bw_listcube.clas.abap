@@ -149,14 +149,17 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
           variant_non_existent = 1
           variant_obsolete     = 2
           OTHERS               = 3.
-      CHECK sy-subrc = 0.
+      IF sy-subrc <> 0.
+        BREAK-POINT ID /mbtools/bc.
+        CONTINUE.
+      ENDIF.
 
       " Definition
       CALL TRANSFORMATION id
         SOURCE data = ls_vari_desc
         RESULT XML ls_var-varid.
       IF sy-subrc <> 0.
-        BREAK-POINT ID /mbtools/bc.                        "#EC NOBREAK
+        BREAK-POINT ID /mbtools/bc.
         CONTINUE.
       ENDIF.
 
@@ -165,7 +168,7 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
         SOURCE data = lt_params
         RESULT XML ls_var-params.
       IF sy-subrc <> 0.
-        BREAK-POINT ID /mbtools/bc.                        "#EC NOBREAK
+        BREAK-POINT ID /mbtools/bc.
         CONTINUE.
       ENDIF.
 
@@ -174,7 +177,7 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
         SOURCE data = it_ioinf
         RESULT XML ls_var-ioinf.
       IF sy-subrc <> 0.
-        BREAK-POINT ID /mbtools/bc.                        "#EC NOBREAK
+        BREAK-POINT ID /mbtools/bc.
         CONTINUE.
       ENDIF.
 
@@ -187,7 +190,7 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
           SOURCE data = lt_texts
           RESULT XML ls_var-texts.
         IF sy-subrc <> 0.
-          BREAK-POINT ID /mbtools/bc.                      "#EC NOBREAK
+          BREAK-POINT ID /mbtools/bc.
           CONTINUE.
         ENDIF.
       ENDIF.
@@ -402,6 +405,7 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
 
     SELECT * FROM /mbtools/bwvars INTO TABLE lt_vars
       WHERE infoprov = iv_infoprov.
+    CHECK sy-subrc = 0.
 
     LOOP AT lt_vars INTO ls_var.
       CLEAR: ls_vari_desc, lt_vari_text, lt_vari_scr, lt_texts.
@@ -411,7 +415,8 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
         SOURCE XML ls_var-varid
         RESULT data = ls_vari_desc.
       IF sy-subrc <> 0.
-        BREAK-POINT.                                       "#EC NOBREAK
+        BREAK-POINT ID /mbtools/bc.
+        CONTINUE.
       ENDIF.
 
       ls_vari_desc-report = iv_repnm.
@@ -421,7 +426,8 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
         SOURCE XML ls_var-params
         RESULT data = lt_params.
       IF sy-subrc <> 0.
-        BREAK-POINT.                                       "#EC NOBREAK
+        BREAK-POINT ID /mbtools/bc.
+        CONTINUE.
       ENDIF.
 
       " InfoObjects
@@ -429,7 +435,8 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
         SOURCE XML ls_var-ioinf
         RESULT data = lt_ioinfs.
       IF sy-subrc <> 0.
-        BREAK-POINT.                                       "#EC NOBREAK
+        BREAK-POINT ID /mbtools/bc.
+        CONTINUE.
       ENDIF.
 
       " Map previous variant definition (param/ioinf) to current InfoObjects
@@ -451,7 +458,8 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
         SOURCE XML ls_var-texts
         RESULT data = lt_texts.
       IF sy-subrc <> 0.
-        BREAK-POINT.                                       "#EC NOBREAK
+        BREAK-POINT ID /mbtools/bc.
+        CONTINUE.
       ENDIF.
 
       LOOP AT lt_texts INTO ls_text.
@@ -491,7 +499,8 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
           variant_locked            = 8
           OTHERS                    = 9.
       IF sy-subrc <> 0.
-        BREAK-POINT.                                       "#EC NOBREAK
+        BREAK-POINT ID /mbtools/bc.
+        CONTINUE.
       ENDIF.
 
     ENDLOOP.
