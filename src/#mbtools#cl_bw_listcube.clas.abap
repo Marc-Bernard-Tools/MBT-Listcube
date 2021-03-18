@@ -201,17 +201,17 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
     " Save changes
     _promote_lock( iv_infoprov ).
 
-    DELETE FROM /mbtools/bwvars WHERE infoprov = iv_infoprov. "#EC CI_SUBRC
-    INSERT /mbtools/bwvars FROM TABLE lt_var.             "#EC CI_SUBRC
+    DELETE FROM /mbtools/bwvars WHERE infoprov = iv_infoprov ##SUBRC_OK.
+    INSERT /mbtools/bwvars FROM TABLE lt_var ##SUBRC_OK.
 
-    DELETE FROM /mbtools/bwvarsp WHERE infoprov = iv_infoprov. "#EC CI_SUBRC
-    INSERT /mbtools/bwvarsp FROM TABLE lt_params.         "#EC CI_SUBRC
+    DELETE FROM /mbtools/bwvarsp WHERE infoprov = iv_infoprov ##SUBRC_OK.
+    INSERT /mbtools/bwvarsp FROM TABLE lt_params ##SUBRC_OK.
 
-    DELETE FROM /mbtools/bwvarsi WHERE infoprov = iv_infoprov. "#EC CI_SUBRC
-    INSERT /mbtools/bwvarsi FROM TABLE lt_iobjs.          "#EC CI_SUBRC
+    DELETE FROM /mbtools/bwvarsi WHERE infoprov = iv_infoprov ##SUBRC_OK.
+    INSERT /mbtools/bwvarsi FROM TABLE lt_iobjs ##SUBRC_OK.
 
-    DELETE FROM /mbtools/bwvarst WHERE infoprov = iv_infoprov. "#EC CI_SUBRC
-    INSERT /mbtools/bwvarst FROM TABLE lt_texts.          "#EC CI_SUBRC
+    DELETE FROM /mbtools/bwvarst WHERE infoprov = iv_infoprov ##SUBRC_OK.
+    INSERT /mbtools/bwvarst FROM TABLE lt_texts ##SUBRC_OK.
 
     CALL FUNCTION 'RSDU_DB_COMMIT'.
 
@@ -258,7 +258,7 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
     ENDIF.
 
     SELECT * FROM /mbtools/bwvarst INTO TABLE lt_texts
-      WHERE infoprov = iv_infoprov.                       "#EC CI_SUBRC
+      WHERE infoprov = iv_infoprov ##SUBRC_OK.
 
     LOOP AT lt_var ASSIGNING <lv_var>.
       APPEND INITIAL LINE TO lt_values ASSIGNING <ls_value>.
