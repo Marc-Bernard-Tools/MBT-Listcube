@@ -44,7 +44,7 @@ CLASS /mbtools/cl_tool_bw_listcube IMPLEMENTATION.
   ENDMETHOD.
 
 
- METHOD /mbtools/if_tool~title.
+  METHOD /mbtools/if_tool~title.
     rv_title = c_tool-title.
   ENDMETHOD.
 
