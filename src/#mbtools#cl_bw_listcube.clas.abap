@@ -1,7 +1,7 @@
 CLASS /mbtools/cl_bw_listcube DEFINITION
   PUBLIC
   FINAL
-  CREATE PUBLIC .
+  CREATE PUBLIC.
 
 ************************************************************************
 * MBT Listcube
@@ -9,9 +9,11 @@ CLASS /mbtools/cl_bw_listcube DEFINITION
 * (c) MBT 2021 https://marcbernardtools.com/
 ************************************************************************
   PUBLIC SECTION.
-    TYPES ty_param TYPE rsparamsl_255 .
+    TYPE-POOLS icon.
+
+    TYPES ty_param TYPE rsparamsl_255.
     TYPES:
-      ty_params TYPE STANDARD TABLE OF ty_param WITH DEFAULT KEY .
+      ty_params TYPE STANDARD TABLE OF ty_param WITH DEFAULT KEY.
 
     CONSTANTS:
       c_listcube_variant TYPE c LENGTH 20 VALUE '/MBTOOLS/VARIANT' ##NO_TEXT.
@@ -20,23 +22,26 @@ CLASS /mbtools/cl_bw_listcube DEFINITION
       IMPORTING
         !iv_infoprov     TYPE rsinfoprov
       RETURNING
-        VALUE(rv_result) TYPE rstxtlg .
+        VALUE(rv_result) TYPE rstxtlg.
     CLASS-METHODS get_variant_description
       IMPORTING
         !iv_infoprov     TYPE rsinfoprov
         !iv_variant      TYPE rsvariant
       RETURNING
-        VALUE(rv_result) TYPE rstxtlg .
+        VALUE(rv_result) TYPE rstxtlg.
     CLASS-METHODS f4_variant
       IMPORTING
         !iv_infoprov TYPE rsinfoprov
       EXPORTING
         !ev_variant  TYPE rsvariant
-        !ev_vartxt   TYPE rstxtlg .
+        !ev_vartxt   TYPE rstxtlg.
     CLASS-METHODS get_variant
+      IMPORTING
+        !iv_repnm        TYPE sy-repid
       EXPORTING
+        VALUE(ev_genrep) TYPE sy-repid
         VALUE(ev_skip)   TYPE abap_bool
-        VALUE(et_params) TYPE ty_params .
+        VALUE(et_params) TYPE ty_params.
     CLASS-METHODS backup_variants
       IMPORTING
         !iv_infoprov TYPE rsddatatarget
@@ -51,17 +56,17 @@ CLASS /mbtools/cl_bw_listcube DEFINITION
         !it_ioinf    TYPE rsdq_t_iobj_info
       RAISING
         /mbtools/cx_exception.
-    METHODS initialize .
-    METHODS pbo .
+    METHODS initialize.
+    METHODS pbo.
     METHODS pai
       CHANGING
-        !cv_ok_code TYPE sy-ucomm .
-    METHODS screen .
+        !cv_ok_code TYPE sy-ucomm.
+    METHODS screen.
     METHODS call_listcube
       IMPORTING
         !iv_infoprov TYPE rsinfoprov
         !iv_variant  TYPE rsvariant
-        !iv_skip     TYPE abap_bool .
+        !iv_skip     TYPE abap_bool.
   PROTECTED SECTION.
 
   PRIVATE SECTION.
@@ -344,15 +349,30 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
     IMPORT infoprov = lv_infoprov variant = lv_variant skip = ev_skip FROM MEMORY ID c_listcube_variant.
     FREE MEMORY ID c_listcube_variant.
 
+    ev_genrep = iv_repnm.
+
     SELECT * FROM /mbtools/bwvarsp
       INTO CORRESPONDING FIELDS OF TABLE lt_params
       WHERE infoprov = lv_infoprov AND variant = lv_variant.
     CHECK sy-subrc = 0.
 
+    ev_genrep = ''.
+
     LOOP AT lt_params ASSIGNING <ls_params>.
       APPEND INITIAL LINE TO et_params ASSIGNING <ls_params_out>.
       MOVE-CORRESPONDING <ls_params> TO <ls_params_out>.
       <ls_params_out>-option = <ls_params>-opt.
+      " Always output to list
+      IF <ls_params_out>-selname = 'L_R1'.
+        <ls_params_out>-option = 'EQ'.
+        <ls_params_out>-low    = abap_true.
+      ELSEIF <ls_params_out>-selname BETWEEN 'L_R2' AND 'L_R5'.
+        <ls_params_out>-option = 'EQ'.
+        <ls_params_out>-low    = abap_false.
+      ELSEIF <ls_params_out>-selname = 'L_TN'.
+        <ls_params_out>-option = 'EQ'.
+        <ls_params_out>-low    = ''.
+      ENDIF.
     ENDLOOP.
 
   ENDMETHOD.

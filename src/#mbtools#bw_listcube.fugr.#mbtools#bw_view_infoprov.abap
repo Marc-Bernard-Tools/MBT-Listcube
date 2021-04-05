@@ -26,7 +26,16 @@ FUNCTION /mbtools/bw_view_infoprov.
   DATA:
     lx_error  TYPE REF TO /mbtools/cx_exception,
     lv_skip   TYPE abap_bool,
+    lv_genrep TYPE sy-repid,
     lt_params TYPE /mbtools/cl_bw_listcube=>ty_params.
+
+  /mbtools/cl_bw_listcube=>get_variant(
+    EXPORTING
+      iv_repnm  = i_repnm
+    IMPORTING
+      ev_skip   = lv_skip
+      ev_genrep = lv_genrep
+      et_params = lt_params ).
 *<<< MBT Listcube Enhancement
 
   DATA:
@@ -56,7 +65,7 @@ FUNCTION /mbtools/bw_view_infoprov.
     USING i_infoprov i_s_dta i_t_dta_dime
           i_show_dimids i_show_sids
           i_use_db_aggregation i_tech_nms
-          i_repnm i_tc_no i_tc_id
+          lv_genrep i_tc_no i_tc_id
     CHANGING c_t_ioinf lt_selscr lt_body lt_init lt_tables lt_datadef
              lt_seltxts.
 
@@ -107,11 +116,6 @@ FUNCTION /mbtools/bw_view_infoprov.
       MESSAGE lx_error TYPE 'S' DISPLAY LIKE 'E'.
       RETURN.
   ENDTRY.
-
-  /mbtools/cl_bw_listcube=>get_variant(
-    IMPORTING
-      ev_skip   = lv_skip
-      et_params = lt_params ).
 
   " Call generated selection report
   IF lt_params IS INITIAL.
