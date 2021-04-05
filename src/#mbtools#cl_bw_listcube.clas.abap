@@ -9,7 +9,6 @@ CLASS /mbtools/cl_bw_listcube DEFINITION
 * (c) MBT 2021 https://marcbernardtools.com/
 ************************************************************************
   PUBLIC SECTION.
-    TYPE-POOLS icon.
 
     TYPES ty_param TYPE rsparamsl_255.
     TYPES:
