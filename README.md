@@ -2,7 +2,7 @@
 
 # MBT Listcube
 
-Variants for Transaction LISTCUBE. Simple, Powerful, Free!
+Variants for transaction LISTCUBE: simple, powerful, free! 
 
 ### EVERYTHING IS VERY MUCH IN PROGRESS HERE 
 ### WE SUGGEST TO WAIT UNTIL THE OFFICIAL LAUNCH
