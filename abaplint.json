@@ -626,14 +626,12 @@
 			"severity": "Error"
 		},
 		"select_add_order_by": {
-			"exclude": [],
+			"exclude": [".*"],
 			"severity": "Error"
 		},
 		"select_performance": {
 			"endSelect": true,
-			"exclude": [
-				"#mbtools#cl_bw_listcube.*"
-			],
+			"exclude": [],
 			"selectStar": true,
 			"severity": "Error",
 			"starOkayIfFewColumns": 10,
