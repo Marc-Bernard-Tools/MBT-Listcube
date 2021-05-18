@@ -204,7 +204,7 @@
 		},
 		"db_operation_in_loop": {
 			"exclude": [
-				"#mbtools#cl_bw_listcube.clas.abap"
+				"#mbtools#cl_bw_listcube.*"
 			],
 			"severity": "Error"
 		},
@@ -631,7 +631,9 @@
 		},
 		"select_performance": {
 			"endSelect": true,
-			"exclude": [],
+			"exclude": [
+				"#mbtools#cl_bw_listcube.*"
+			],
 			"selectStar": true,
 			"severity": "Error",
 			"starOkayIfFewColumns": 10,
