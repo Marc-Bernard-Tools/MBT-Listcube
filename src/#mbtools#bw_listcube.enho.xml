@@ -18,44 +18,7 @@
      <ENHMODE>D</ENHMODE>
      <FULL_NAME>\FU:RSDQ_VIEW_INFOPROV\SE:BEGIN\EI</FULL_NAME>
      <SOURCE>
-      <item>************************************************************************</item>
-      <item>* MBT Listcube</item>
-      <item>*</item>
-      <item>* (c) MBT 2021 https://marcbernardtools.com/</item>
-      <item>************************************************************************</item>
-      <item/>
-      <item>  IF /mbtools/cl_switches=&gt;is_active( /mbtools/cl_switches=&gt;c_tool-mbt_listcube ) = abap_true.</item>
-      <item/>
-      <item>    CALL FUNCTION &apos;/MBTOOLS/BW_VIEW_INFOPROV&apos;</item>
-      <item>      EXPORTING</item>
-      <item>        i_infoprov           = i_infoprov</item>
-      <item>        i_s_dta              = i_s_dta</item>
-      <item>        i_t_dta_dime         = i_t_dta_dime</item>
-      <item>        i_show_sids          = i_show_sids</item>
-      <item>        i_show_dimids        = i_show_dimids</item>
-      <item>        i_tech_nms           = i_tech_nms</item>
-      <item>        i_use_db_aggregation = i_use_db_aggregation</item>
-      <item>        i_repnm              = i_repnm</item>
-      <item>      CHANGING</item>
-      <item>        c_t_ioinf            = c_t_ioinf</item>
-      <item>      EXCEPTIONS</item>
-      <item>        dta_not_found        = 1</item>
-      <item>        illegal_input        = 2</item>
-      <item>        x_message            = 3</item>
-      <item>        OTHERS               = 4.</item>
-      <item>    CASE sy-subrc.</item>
-      <item>      WHEN 0.</item>
-      <item>        RETURN.</item>
-      <item>      WHEN 1.</item>
-      <item>        RAISE dta_not_found.</item>
-      <item>      WHEN 2.</item>
-      <item>        RAISE illegal_input.</item>
-      <item>      WHEN OTHERS.</item>
-      <item>        RAISE x_message.</item>
-      <item>    ENDCASE.</item>
-      <item/>
-      <item>  ENDIF.</item>
-      <item/>
+      <item>FILE:0001</item>
      </SOURCE>
     </ENH_HOOK_IMPL>
    </ENHANCEMENTS>

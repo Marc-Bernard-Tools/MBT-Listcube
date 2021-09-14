@@ -5,7 +5,8 @@ REPORT /mbtools/bw_listcube.
 * This tool adds full variant features to the classic LISTCUBE trans-
 * action
 *
-* (c) MBT 2021 https://marcbernardtools.com/
+* Copyright 2021 Marc Bernard <https://marcbernardtools.com/>
+* SPDX-License-Identifier: GPL-3.0-or-later
 ************************************************************************
 
 TABLES:
