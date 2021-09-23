@@ -1,4 +1,4 @@
-"NAME:\FU:RSDQ_VIEW_INFOPROV\SE:BEGIN\EI
+"Name: \FU:RSDQ_VIEW_INFOPROV\SE:BEGIN\EI
 ENHANCEMENT 0 /MBTOOLS/BW_LISTCUBE.
 ************************************************************************
 * MBT Listcube
