@@ -17,6 +17,7 @@
     <DESCRIPTION>Variants for transaction LISTCUBE: simple, powerful, free!</DESCRIPTION>
     <GIT_URL>https://github.com/Marc-Bernard-Tools/MBT-Listcube</GIT_URL>
     <TARGET_PACKAGE>/MBTOOLS/BW-LISTCUBE</TARGET_PACKAGE>
+    <LOGO>/MBTOOLS/MBT_LISTCUBE_TN</LOGO>
     <DEPENDENCIES>
      <item>
       <NAME>MBT-Base</NAME>
