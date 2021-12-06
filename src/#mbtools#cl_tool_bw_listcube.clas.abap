@@ -15,7 +15,7 @@ CLASS /mbtools/cl_tool_bw_listcube DEFINITION
 
     CONSTANTS:
       BEGIN OF c_tool,
-        version      TYPE string VALUE '1.3.0' ##NO_TEXT,
+        version      TYPE string VALUE '1.2.0' ##NO_TEXT,
         title        TYPE string VALUE 'MBT Listcube' ##NO_TEXT,
         description  TYPE string
         VALUE 'Variants for transaction LISTCUBE: simple, powerful, free!' ##NO_TEXT,
