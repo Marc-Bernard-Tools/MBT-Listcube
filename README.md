@@ -1,4 +1,8 @@
 ![abap package version](https://img.shields.io/endpoint?url=https://shield.abap.space/version-shield-json/github/Marc-Bernard-Tools/Marc-Bernard-Tools-Versions/.apack-manifest.xml/dependencies/github.com/Marc-Bernard-Tools/MBT-Listcube&label=version&color=darkgray)
+[![license](https://img.shields.io/github/license/Marc-Bernard-Tools/MBT-Listcube)](LICENSE)
+[![REUSE status](https://api.reuse.software/badge/github.com/Marc-Bernard-Tools/MBT-Listcube)](https://api.reuse.software/info/github.com/Marc-Bernard-Tools/MBT-Listcube)
+[![contributor covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](CODE_OF_CONDUCT.md)
+![abaplint](https://github.com/sbcgua/ajson/workflows/abaplint/badge.svg)
 
 # MBT Listcube
 
