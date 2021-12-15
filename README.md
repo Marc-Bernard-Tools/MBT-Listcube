@@ -1,14 +1,20 @@
-[![license](https://img.shields.io/github/license/Marc-Bernard-Tools/MBT-Listcube)](LICENSE)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](CODE_OF_CONDUCT.md)
-[![REUSE](https://api.reuse.software/badge/github.com/Marc-Bernard-Tools/MBT-Listcube)](https://api.reuse.software/info/github.com/Marc-Bernard-Tools/MBT-Listcube)
+![abap package version](https://img.shields.io/endpoint?url=https://shield.abap.space/version-shield-json/github/Marc-Bernard-Tools/Marc-Bernard-Tools-Versions/.apack-manifest.xml/dependencies/github.com/Marc-Bernard-Tools/MBT-Listcube&label=version&color=orange)
 ![abaplint](https://github.com/sbcgua/ajson/workflows/abaplint/badge.svg)
-![abap package version](https://img.shields.io/endpoint?url=https://shield.abap.space/version-shield-json/github/Marc-Bernard-Tools/Marc-Bernard-Tools-Versions/.apack-manifest.xml/dependencies/github.com/Marc-Bernard-Tools/MBT-Listcube&label=version&color=darkgray)
+
+[![license](https://img.shields.io/github/license/Marc-Bernard-Tools/MBT-Listcube?color=green)](LICENSE)
+[![REUSE Status](https://api.reuse.software/badge/github.com/Marc-Bernard-Tools/MBT-Listcube)](https://api.reuse.software/info/github.com/Marc-Bernard-Tools/MBT-Listcube)
+[![ClearlyDefined Score](https://img.shields.io/clearlydefined/score/git/github/marc-bernard-tools/MBT-Listcube/918d8c9a69b83aa902f94cdf8f9b8dd46d6a8f5b?label=ClearlyDefined%20Score)](https://clearlydefined.io/definitions/git/github/marc-bernard-tools/MBT-Listcube/918d8c9a69b83aa902f94cdf8f9b8dd46d6a8f5b)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
 # MBT Listcube
 
 Variants for transaction LISTCUBE: simple, powerful, free! 
 
-For details, visit [Marc Bernard Tools](https://marcbernardtools.com/downloads/mbt-listcube) and follow [@marcfbe](https://twitter.com/marcfbe) on Twitter.
+For details, visit **[Marc Bernard Tools](https://marcbernardtools.com/downloads/mbt-listcube)** and follow [@marcfbe](https://twitter.com/marcfbe) on Twitter.
+
+![image](https://user-images.githubusercontent.com/59966492/146277695-dfedb0f7-c626-4486-9470-3493718b4ecc.png)
+
+![image](https://user-images.githubusercontent.com/59966492/146277906-09a10770-7d54-42a0-8155-64470a5726a4.png)
 
 ## Contributions
 
