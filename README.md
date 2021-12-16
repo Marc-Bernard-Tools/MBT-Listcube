@@ -4,7 +4,7 @@
 [![license](https://img.shields.io/github/license/Marc-Bernard-Tools/MBT-Listcube?color=green)](LICENSE)
 [![REUSE Status](https://api.reuse.software/badge/github.com/Marc-Bernard-Tools/MBT-Listcube)](https://api.reuse.software/info/github.com/Marc-Bernard-Tools/MBT-Listcube)
 [![ClearlyDefined Score](https://img.shields.io/clearlydefined/score/git/github/marc-bernard-tools/MBT-Listcube/918d8c9a69b83aa902f94cdf8f9b8dd46d6a8f5b?label=ClearlyDefined%20Score)](https://clearlydefined.io/definitions/git/github/marc-bernard-tools/MBT-Listcube/918d8c9a69b83aa902f94cdf8f9b8dd46d6a8f5b)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](CODE_OF_CONDUCT.md)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg?color=green)](CODE_OF_CONDUCT.md)
 
 # MBT Listcube
 
