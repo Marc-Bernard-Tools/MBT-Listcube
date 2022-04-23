@@ -312,22 +312,22 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
 
     cl_rsd_dta=>factory(
       EXPORTING
-        i_infoprov        = iv_infoprov
+        i_infoprov = iv_infoprov
       RECEIVING
-        r_r_dta           = lo_dta
+        r_r_dta    = lo_dta
       EXCEPTIONS
-        not_found         = 1
-        OTHERS            = 2 ).
+        not_found  = 1
+        OTHERS     = 2 ).
     CHECK sy-subrc = 0.
 
     lo_dta->dta_get_info(
       IMPORTING
-        e_s_dta            = ls_dta
+        e_s_dta         = ls_dta
       EXCEPTIONS
-        dta_not_found      = 1
-        iobj_not_found     = 2
-        objvers_invalid    = 3
-        OTHERS             = 4 ).
+        dta_not_found   = 1
+        iobj_not_found  = 2
+        objvers_invalid = 3
+        OTHERS          = 4 ).
     CHECK sy-subrc = 0.
 
     rv_result = ls_dta-txtlg.
