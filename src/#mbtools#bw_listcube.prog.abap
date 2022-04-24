@@ -130,8 +130,6 @@ INITIALIZATION.
   scr_t200 = 'Select which InfoProvider to view and optionally'(200).
   scr_t201 = 'which variant to use'(201).
 
-  scr_tab-prog = sy-cprog. " abaplint #1291
-
   IF p_dta IS INITIAL.
     GET PARAMETER ID 'RSDQ_INFOPROV' FIELD p_dta.
   ENDIF.
