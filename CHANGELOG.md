@@ -14,6 +14,11 @@ and [ISO Date Format](https://www.iso.org/iso-8601-date-and-time-format.html).
 
 ### Fixed
 
+## Version [1.3.0] - 2022-05-19
+
+### Fixed
+
+- Fixed saving of variant texts
 
 ## Version [1.2.0] - 2021-12-06
 
@@ -28,7 +33,8 @@ Launch Release
 Initial Release. For details, see [Features](https://marcbernardtools.com/docs/mbt-listcube/features).
 
 
-[Unreleased]: https://github.com/Marc-Bernard-Tools/MBT-Listcube/compare/1.2.0...main
+[Unreleased]: https://github.com/Marc-Bernard-Tools/MBT-Listcube/compare/1.3.0...main
+[1.3.0]: https://github.com/Marc-Bernard-Tools/MBT-Listcube/compare/1.2.0...1.3.0
 [1.2.0]: https://github.com/Marc-Bernard-Tools/MBT-Listcube/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/Marc-Bernard-Tools/MBT-Listcube/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/Marc-Bernard-Tools/MBT-Listcube/releases/tag/1.0.0
