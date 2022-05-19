@@ -121,6 +121,7 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
       lt_creadate   TYPE TABLE OF rsdatrange,
       lt_changedate TYPE TABLE OF rsdatrange,
       lt_variants   TYPE TABLE OF rsvariinfo,
+      lt_varit      TYPE TABLE OF varit,
       lt_valutab    TYPE TABLE OF ty_param,
       lt_var        TYPE TABLE OF /mbtools/bwvars,
       lt_iobjs      TYPE TABLE OF /mbtools/bwvarsi,
@@ -129,6 +130,7 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
 
     FIELD-SYMBOLS:
       <ls_variant> LIKE LINE OF lt_variants,
+      <ls_varit>   LIKE LINE OF lt_varit,
       <ls_var>     LIKE LINE OF lt_var,
       <ls_valu>    LIKE LINE OF lt_valutab,
       <ls_params>  LIKE LINE OF lt_params,
@@ -193,11 +195,14 @@ CLASS /mbtools/cl_bw_listcube IMPLEMENTATION.
       ENDLOOP.
 
       " Texts
-      SELECT langu vtext FROM varit INTO CORRESPONDING FIELDS OF TABLE lt_texts
+      SELECT * FROM varit INTO TABLE lt_varit
         WHERE report = <ls_var>-report AND variant = <ls_var>-variant ##TOO_MANY_ITAB_FIELDS.
       IF sy-subrc = 0.
-        LOOP AT lt_texts ASSIGNING <ls_texts>.
+        LOOP AT lt_varit ASSIGNING <ls_varit>.
+          APPEND INITIAL LINE TO lt_texts ASSIGNING <ls_texts>.
           MOVE-CORRESPONDING <ls_var> TO <ls_texts>.
+          <ls_texts>-langu = <ls_varit>-langu.
+          <ls_texts>-vtext = <ls_varit>-vtext.
         ENDLOOP.
       ENDIF.
 
