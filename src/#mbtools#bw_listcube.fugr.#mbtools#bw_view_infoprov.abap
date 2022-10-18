@@ -53,7 +53,6 @@ FUNCTION /mbtools/bw_view_infoprov.
     lt_seltxts     TYPE rsdq_t_seltext,
     lt_report      TYPE rsdq_t_text,
     lt_datadef     TYPE rsdq_t_text,
-    lt_prettycode  TYPE rsdq_t_text,
     lt_pretcode_ot TYPE rsdrs_t_abapsource, "ot = Other Type
     lv_repnm       TYPE sy-repid,
     lv_subrc       TYPE sy-subrc.
