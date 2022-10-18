@@ -98,7 +98,7 @@ FUNCTION /mbtools/bw_view_infoprov.
 
   CLEAR lt_report.
 
-  IF i_show_report = rs_c_true.
+  IF i_show_report = abap_true.
 *   EDITOR-CALL FOR lt_prettycode DISPLAY-MODE."OSS 1357370
     cl_rsdu_editor=>edit( CHANGING c_t_code = lt_pretcode_ot ).
   ENDIF.
@@ -110,7 +110,7 @@ FUNCTION /mbtools/bw_view_infoprov.
       i_appl  = 'RSDQ/SEL_SCREEN'.
 
 * #CP-SUPPRESS: no direct user input
-  INSERT REPORT lv_repnm FROM lt_pretcode_ot UNICODE ENABLING rs_c_true.
+  INSERT REPORT lv_repnm FROM lt_pretcode_ot UNICODE ENABLING abap_true.
 
 *>>> MBT Listcube Enhancement
   " Restore all variants
