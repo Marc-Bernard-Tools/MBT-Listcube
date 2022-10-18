@@ -40,7 +40,7 @@ Use pretty printer, keywords upper case + indentation.
 
 ### abaplint
 
-Pull requests must pass all abaplint [checks](https://github.com/Marc-Bernard-Tools/MBT-Base/blob/main/abaplint.json) before they can be merged.
+Pull requests must pass all abaplint [checks](https://github.com/Marc-Bernard-Tools/MBT-Listcube/blob/main/abaplint.json) before they can be merged.
 
 ### Internationalization (I18N)
 
