@@ -3,7 +3,8 @@ ENHANCEMENT 0 /MBTOOLS/BW_LISTCUBE.
 ************************************************************************
 * MBT Listcube
 *
-* (c) MBT 2021 https://marcbernardtools.com/
+* Copyright 2021 Marc Bernard <https://marcbernardtools.com/>
+* SPDX-License-Identifier: GPL-3.0-only
 ************************************************************************
 
   IF /mbtools/cl_switches=>is_active( /mbtools/cl_switches=>c_tool-mbt_listcube ) = abap_true.
