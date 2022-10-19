@@ -27,7 +27,9 @@
 		},
 		"abapdoc": {
 			"checkLocal": false,
+      "classDefinition": false,
 			"exclude": [".*"],
+      "interfaceDefinition": false,
 			"severity": "Error"
 		},
 		"allowed_object_naming": {
@@ -77,7 +79,8 @@
 			"describeLines": true,
 			"exclude": [],
 			"severity": "Error",
-			"statics": true
+			"statics": true,
+      "testSeams": true
 		},
 		"begin_end_names": {
 			"exclude": [],
@@ -137,7 +140,7 @@
 			"openDataset": true,
 			"readTable": true,
 			"selectSingle": false,
-			"selectTable": true,			
+			"selectTable": true,
 			"severity": "Error",
 			"updateDatabase": true
 		},
@@ -215,10 +218,10 @@
 			"dynamicSQL": true,
 			"exclude": [],
 			"execSQL": true,
+      "exportDynpro": true,
 			"generateDynpro": true,
 			"generateReport": true,
 			"generateSubroutine": true,
-			"importDynpro": true,
 			"insertReport": false,
 			"kernelCall": true,
 			"severity": "Error",
@@ -575,12 +578,15 @@
 		"obsolete_statement": {
 			"add": true,
 			"callTransformation": true,
+      "clientSpecified": true,
 			"communication": true,
 			"compute": true,
 			"divide": true,
 			"exclude": [],
 			"exitFromSQL": true,
 			"fieldSymbolStructure": true,
+      "formDefinition": true,
+      "formImplementation": true,
 			"freeMemory": true,
 			"load": true,
 			"move": true,
@@ -707,6 +713,7 @@
 			"ignorePatterns": [],
 			"parameter": "^P_.+$",
 			"patternKind": "required",
+      "screenElement": "^SC_.+$",
 			"selectOption": "^S_.+$",
 			"severity": "Error"
 		},
