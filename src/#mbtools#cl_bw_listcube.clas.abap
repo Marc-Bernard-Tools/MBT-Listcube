@@ -11,8 +11,8 @@ CLASS /mbtools/cl_bw_listcube DEFINITION
 ************************************************************************
   PUBLIC SECTION.
 
-    TYPES ty_param TYPE rsparamsl_255.
     TYPES:
+      ty_param  TYPE rsparamsl_255,
       ty_params TYPE STANDARD TABLE OF ty_param WITH DEFAULT KEY.
 
     CONSTANTS:
@@ -75,11 +75,9 @@ CLASS /mbtools/cl_bw_listcube DEFINITION
       BEGIN OF ty_value,
         variant TYPE rsvariant,
         vtext   TYPE rvart_vtxt,
-      END OF ty_value.
-    TYPES:
-      ty_values TYPE STANDARD TABLE OF ty_value WITH DEFAULT KEY.
-    TYPES:
-      ty_iobjs TYPE STANDARD TABLE OF /mbtools/bwvarsi WITH DEFAULT KEY.
+      END OF ty_value,
+      ty_values TYPE STANDARD TABLE OF ty_value WITH DEFAULT KEY,
+      ty_iobjs  TYPE STANDARD TABLE OF /mbtools/bwvarsi WITH DEFAULT KEY.
 
     CLASS-METHODS _map_infoobject_selection
       IMPORTING
