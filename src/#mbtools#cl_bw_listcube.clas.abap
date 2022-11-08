@@ -15,8 +15,7 @@ CLASS /mbtools/cl_bw_listcube DEFINITION
       ty_param  TYPE rsparamsl_255,
       ty_params TYPE STANDARD TABLE OF ty_param WITH DEFAULT KEY.
 
-    CONSTANTS:
-      c_listcube_variant TYPE c LENGTH 20 VALUE '/MBTOOLS/VARIANT' ##NO_TEXT.
+    CONSTANTS c_listcube_variant TYPE c LENGTH 20 VALUE '/MBTOOLS/VARIANT' ##NO_TEXT.
 
     CLASS-METHODS get_infoprov_description
       IMPORTING
