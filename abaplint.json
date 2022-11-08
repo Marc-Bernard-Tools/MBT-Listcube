@@ -557,7 +557,9 @@
       "severity": "Error"
     },
     "no_external_form_calls": {
-      "exclude": [],
+      "exclude": [
+        "#mbtools#bw_listcube.fugr.*"
+      ],
       "severity": "Error"
     },
     "no_inline_in_optional_branches": {
