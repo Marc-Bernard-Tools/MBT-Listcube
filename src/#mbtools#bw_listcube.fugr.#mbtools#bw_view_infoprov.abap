@@ -28,6 +28,18 @@ FUNCTION /mbtools/bw_view_infoprov.
 * SPDX-License-Identifier: GPL-3.0-only
 ************************************************************************
 
+  DATA:
+    lt_init        TYPE rsdq_t_text,
+    lt_body        TYPE rsdq_t_text,
+    lt_selscr      TYPE rsdq_t_text,
+    lt_tables      TYPE rsdq_t_text,
+    lt_seltxts     TYPE rsdq_t_seltext,
+    lt_report      TYPE rsdq_t_text,
+    lt_datadef     TYPE rsdq_t_text,
+    lt_pretcode_ot TYPE rsdrs_t_abapsource, "ot = Other Type
+    lv_repnm       TYPE sy-repid,
+    lv_subrc       TYPE sy-subrc.
+
 *>>> MBT Listcube Enhancement
 * Enhanced version of RSDQ_VIEW_INFOPROV
   DATA:
@@ -44,18 +56,6 @@ FUNCTION /mbtools/bw_view_infoprov.
       ev_genrep = lv_genrep
       et_params = lt_params ).
 *<<< MBT Listcube Enhancement
-
-  DATA:
-    lt_init        TYPE rsdq_t_text,
-    lt_body        TYPE rsdq_t_text,
-    lt_selscr      TYPE rsdq_t_text,
-    lt_tables      TYPE rsdq_t_text,
-    lt_seltxts     TYPE rsdq_t_seltext,
-    lt_report      TYPE rsdq_t_text,
-    lt_datadef     TYPE rsdq_t_text,
-    lt_pretcode_ot TYPE rsdrs_t_abapsource, "ot = Other Type
-    lv_repnm       TYPE sy-repid,
-    lv_subrc       TYPE sy-subrc.
 
 * check, if report name has been provided,
 * otherwise generate report name
