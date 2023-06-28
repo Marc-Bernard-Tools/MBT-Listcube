@@ -109,7 +109,7 @@ FUNCTION /mbtools/bw_view_infoprov.
       i_appl  = 'RSDQ/SEL_SCREEN'.
 
 * #CP-SUPPRESS: no direct user input
-  INSERT REPORT lv_repnm FROM lt_pretcode_ot VERSION 'X'.
+  INSERT REPORT lv_repnm FROM lt_pretcode_ot.
 
 *>>> MBT Listcube Enhancement
   " Restore all variants
