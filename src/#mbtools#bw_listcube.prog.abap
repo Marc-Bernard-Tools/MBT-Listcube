@@ -9,7 +9,7 @@ REPORT /mbtools/bw_listcube.
 * SPDX-License-Identifier: GPL-3.0-only
 ************************************************************************
 
-TABLES:
+TABLES
   sscrfields.
 *-----------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ SELECTION-SCREEN:
 
 *-----------------------------------------------------------------------
 
-CONSTANTS:
+CONSTANTS
   c_title TYPE string VALUE /mbtools/cl_tool_bw_listcube=>c_tool-title.
 
 DATA:
