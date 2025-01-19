@@ -10,7 +10,7 @@
 
 Variants for transaction LISTCUBE: simple, powerful, free! 
 
-For details, visit **[Marc Bernard Tools](https://marcbernardtools.com/downloads/mbt-listcube)** and follow [@marcfbe](https://twitter.com/marcfbe) on Twitter.
+For details, visit **[Marc Bernard Tools](https://marcbernardtools.com/downloads/mbt-listcube)** and follow [@marcf.be](https://bsky.app/profile/marcf.be) on Bluesky.
 
 ![image](https://user-images.githubusercontent.com/59966492/146277695-dfedb0f7-c626-4486-9470-3493718b4ecc.png)
 
@@ -29,7 +29,7 @@ All contributions are welcome! Read our [Contribution Guidelines](CONTRIBUTING.m
 
 Made with ❤️ in Canada
 
-Copyright 2021 Marc Bernard <https://marcbernardtools.com/>
+Copyright 2025 Marc Bernard <https://marcbernardtools.com/>
 
 Follow [@marcf.be](https://bsky.app/profile/marcf.be) on Bluesky and [@marcfbe](https://linkedin.com/in/marcfbe) on LinkedIn
 
